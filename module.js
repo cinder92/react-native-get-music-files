@@ -1,4 +1,7 @@
-import {SongsCollection} from 'NativeModules';
+'use strict';
+
+import { NativeModules, DeviceEventEmitter } from 'react-native';
+const SongsCollection = NativeModules.SongsCollection;
 
 let MusicFiles = {
 	get : function(success,error){
