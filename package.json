@@ -1,6 +1,7 @@
 {
   "name": "react-native-get-music-files",
-  "version": "1.0.0",
+  "version": "1.0.2",
+  "main" : "module.js",
   "description": "React Native plugin to get music files from sd and local memory for Android",
   "keywords": [
     "react",
@@ -10,9 +11,12 @@
     "files"
   ],
   "author": "Dante Cervantes",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cinder92/react-native-get-music-files.git"
+  },
   "license": "ISC",
   "peerDependencies": {
     "react-native": ">=0.8.0"
-  },
-  "rnpm": {}
+  }
 }
