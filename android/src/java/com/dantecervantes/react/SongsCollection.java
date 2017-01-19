@@ -1,4 +1,4 @@
-package com.fancyplayer;
+package com.dantecervantes.react;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
