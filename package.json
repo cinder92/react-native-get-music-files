@@ -1,6 +1,6 @@
 {
   "name": "react-native-get-music-files",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main" : "module.js",
   "description": "React Native plugin to get music files from sd and local memory for Android",
   "keywords": [
