@@ -1,7 +1,7 @@
 # react-native-get-music-files
 React Native package to get music files from local and sd for Android (only)
 
-#What does this package?
+# What does this package?
 
 This package get all the sound files in your local and sd card (Android only), and retrive metadata from each file, also generate an blurred image from cover file.
 
@@ -15,10 +15,10 @@ This package get all the sound files in your local and sd card (Android only), a
 * Duration
 
 
-#How to install
+# How to install
 `npm i -S react-native-get-music-files`
 
-#How to use it
+# How to use it
 
 ```
 import MusicFiles from 'react-native-get-music-files';
@@ -50,3 +50,11 @@ MusicFiles returns an array of objects where you can loop, something like this.
   }
 ]
 ```
+
+# TODO
+
+- [ ] iOS Version
+- [x] Android Version
+- [ ] Make Blur parametter optional
+
+PR are welcome!
