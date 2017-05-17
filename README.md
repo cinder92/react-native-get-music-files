@@ -56,5 +56,6 @@ MusicFiles returns an array of objects where you can loop, something like this.
 - [ ] iOS Version
 - [x] Android Version
 - [ ] Make Blur parametter optional
+- [ ] Speed up retriving songs (cache)
 
 PR are welcome!
