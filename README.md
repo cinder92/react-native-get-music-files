@@ -16,7 +16,7 @@ This package get all the sound files in your local and sd card (Android only), a
 
 
 # How to install
-`npm i -S react-native-get-music-files`
+`npm i -S react-native-get-music-files && react-native link`
 
 # How to use it
 
