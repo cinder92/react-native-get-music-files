@@ -23,13 +23,16 @@ This package get all the sound files in your local and sd card (Android only), a
 ```
 import MusicFiles from 'react-native-get-music-files';
 
+let createBlurImages = true; // Default value is false
+
 MusicFiles.get(
   (success) => {
      //this.saveSongData(success)
   },
   (error) => {
        console.log(error)
-  }
+  },
+  createBlurImages
 );
 ```
 
