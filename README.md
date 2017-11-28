@@ -48,7 +48,7 @@ MusicFiles returns an array of objects where you can loop, something like this.
     genre : "Folk",
     duration : 132132312321, // miliseconds
     cover : "file:///sdcard/0/123.png",
-    blur : "file:///sdcard/0/123.png",
+    blur : "file:///sdcard/0/123-blur.png", //Will come null if createBLur is set to false
     path : "/sdcard/0/la-danza-del-fuego.mp3"
   }
 ]
@@ -58,7 +58,7 @@ MusicFiles returns an array of objects where you can loop, something like this.
 
 - [ ] iOS Version
 - [x] Android Version
-- [ ] Make Blur parametter optional
+- [x] Make Blur parametter optional
 - [ ] Speed up retriving songs (cache)
 
 PR are welcome!
