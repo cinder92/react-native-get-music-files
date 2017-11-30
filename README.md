@@ -1,6 +1,22 @@
-
 # react-native-get-music-files
+React Native package to get music files from local and sd for Android (only)
 
+# What does this package?
+
+This package get all the sound files in your local and sd card (Android only), and retrive metadata from each file, also generate an blurred image from cover file.
+
+* SongID
+* Title
+* Author
+* Album
+* Duration
+* Path
+* Cover
+* Duration
+* Lyrics
+* Date
+* Genre
+* Comments
 ## Getting started
 
 `$ npm install react-native-get-music-files --save`
@@ -12,7 +28,7 @@
 ### Manual installation
 
 
-#### iOS (WIP NOT READY)
+#### iOS
 
 1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
 2. Go to `node_modules` ➜ `react-native-reat-native-get-music-files` and add `RNReatNativeGetMusicFiles.xcodeproj`
@@ -33,26 +49,6 @@
   	```
       compile project(':react-native-get-music-files')
   	```
-  
-# react-native-get-music-files
-React Native package to get music files from local and sd for Android (only)
-
-# What does this package?
-
-This package get all the sound files in your local and sd card (Android only), and retrive metadata from each file, also generate an blurred image from cover file.
-
-* SongID
-* Title
-* Author
-* Album
-* Duration
-* Path
-* Cover
-* Duration
-* Lyrics
-* Date
-* Genre
-* Comments
 
 ## Usage
 ```
@@ -69,7 +65,8 @@ MusicFiles.getAll({
     date : true,
     lyrics : true,
     comments : true
-    minimumSongDuration : 10000 // get songs bigger than 10000 miliseconds duration
+    minimumSongDuration : 10000 // get songs bigger than 10000 miliseconds duration,
+    fields : ['title','albumTitle','genre','lyrics','artwork','duration'] // for iOs Version
 },(error) => {
     alert("ERROR: " + error);
 },(response) => {
@@ -99,7 +96,7 @@ MusicFiles returns an array of objects where you can loop, something like this.
 
 # TODO
 
-- [ ] iOS Version
+- [x] iOS Version
 - [x] Android Version
 - [x] Optional parameters
 - [x] Speed up retriving songs (run in another thread)
