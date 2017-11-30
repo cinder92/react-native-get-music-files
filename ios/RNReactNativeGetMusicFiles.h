@@ -5,7 +5,9 @@
 #import <React/RCTBridgeModule.h>
 #endif
 
-@interface RNReatNativeGetMusicFiles : NSObject <RCTBridgeModule>
+#import <Foundation/Foundation.h>
+
+@interface RNReactNativeGetMusicFiles : NSObject <RCTBridgeModule>
 
 @end
   
