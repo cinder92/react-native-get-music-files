@@ -10,11 +10,10 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-
+import android.util.Log;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
@@ -22,158 +21,250 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 
+import wseemann.media.FFmpegMediaMetadataRetriever;
+import com.reactlibrary.ReactNativeFileManager;
+
+import org.farng.mp3.MP3File;
+
 
 public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule {
 
     private final ReactApplicationContext reactContext;
-    private ReactNativeFileManager fcm;
+    private boolean getBluredImages = false;
+    private boolean getArtistFromSong = false;
+    private boolean getDurationFromSong = true;
+    private boolean getTitleFromSong = true;
+    private boolean getIDFromSong = false;
+    private boolean getCoverFromSong = false;
+    private boolean getGenreFromSong = false;
+    private boolean getAlbumFromSong = true;
+    private boolean getDateFromSong = false;
+    private boolean getCommentsFromSong = false;
+    private boolean getLyricsFromSong = false;
+    private int minimumSongDuration = 0;
 
-  public RNReactNativeGetMusicFilesModule(ReactApplicationContext reactContext) {
-    super(reactContext);
-    this.reactContext = reactContext;
-  }
+    public RNReactNativeGetMusicFilesModule(ReactApplicationContext reactContext) {
+        super(reactContext);
+        this.reactContext = reactContext;
+    }
 
-  @Override
-  public String getName() {
-    return "RNReactNativeGetMusicFiles";
-  }
+    @Override
+    public String getName() {
+        return "RNReactNativeGetMusicFiles";
+    }
 
-  @ReactMethod
-  public void getAll(ReadableMap options, Callback errorCallback, Callback successCallback){
+    @ReactMethod
+    public void getAll(ReadableMap options, final Callback errorCallback, final Callback successCallback) {
 
-      successCallback.invoke(options);
 
-  }
-
-  /*@ReactMethod
-  public void getAll(Boolean createBlur, Callback errorCallback, Callback successCallback) {
-
-        ContentResolver musicResolver = this.getCurrentActivity().getContentResolver();
-        Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
-
-        if (musicCursor != null && musicCursor.moveToFirst()) {
-
-            if (musicCursor.getCount() > 0) {
-                WritableArray jsonArray = new WritableNativeArray();
-                MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-                WritableMap items = new WritableNativeMap();
-                
-                //metadata variables
-                int titleColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
-                int idColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
-                int artistColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ARTIST);
-
-                try {
-                    do {
-                        try {
-                            items = new WritableNativeMap();
-                            byte[] art;
-
-                            //without metadata
-                            long thisId = musicCursor.getLong(idColumn);
-                            String thisPath = musicCursor
-                                    .getString(musicCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
-                            String thisTitle = musicCursor.getString(titleColumn);
-                            String thisArtist = musicCursor.getString(artistColumn);
-                            String Duration = musicCursor
-                                    .getString(musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
-
-                            if (thisPath != null && thisPath != "") {
-                                mmr.setDataSource(thisPath);
-                                //with metadata
-                                String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-                                String author = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-                                String title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-                                String genero = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
-                                String fileName = thisPath.substring(thisPath.lastIndexOf("/") + 1);
-                                String encoded = "";
-                                String blurred = "";
-                                String encodedImage = "";
-                                String blurImage = "";
-
-                                art = mmr.getEmbeddedPicture();
-
-                                if (album == null) {
-                                    album = thisArtist;
-                                }
-
-                                if (author == null) {
-                                    author = thisArtist;
-                                }
-
-                                if (title == null) {
-                                    title = thisTitle;
-                                }
-
-                                if (art != null) {
-                                    Bitmap songImage = BitmapFactory.decodeByteArray(art, 0, art.length);
-
-                                    try {
-                                        String pathToImg = Environment.getExternalStorageDirectory() + "/" + thisId + ".jpg";
-                                        encoded = fcm.saveImageToStorageAndGetPath(pathToImg, songImage);
-                                    } catch (Exception e) {
-                                        // Just let images empty
-                                    }
-
-                                    if (createBlur) {
-                                        try {
-                                            String pathToImg = Environment.getExternalStorageDirectory() + "/" + thisId + "-blur.jpg";
-                                            blurred = fcm.saveBlurImageToStorageAndGetPath(pathToImg, songImage);
-                                        } catch (Exception e) {
-    
-                                        }
-                                    }
-                                }
-
-                                String str = String.valueOf(thisId);
-                                //convert string to long
-                                thisId = Long.valueOf(str);
-
-                                items.putString("id", str);
-                                items.putString("album", album);
-                                items.putString("author", author);
-                                items.putString("title", title);
-                                items.putString("genre", genero);
-
-                                if (encoded == "") {
-                                    items.putString("cover", "");
-                                } else {
-                                    items.putString("cover", "file://" + encoded);
-                                }
-
-                                if (blurred == "") {
-                                    items.putString("blur", "");
-                                } else {
-                                    items.putString("blur", "file://" + blurred);
-                                }
-
-                                items.putString("duration", Duration);
-                                items.putString("path", thisPath);
-                                items.putString("fileName", fileName);
-
-                                jsonArray.pushMap(items);
-                            }
-                        } catch (Exception e) {
-                            // An error in one message should not prevent from getting the rest
-                            // There are cases when a corrupted file can't be read and a RuntimeException is raised
-
-                            // Let's discuss how to deal with these kind of exeptions
-
-                            continue; // This is redundant, but adds meaning
-                        }
-                    } while (musicCursor.moveToNext());
-
-                    successCallback.invoke(jsonArray);
-                } catch (RuntimeException e) {
-                    errorCallback.invoke(e.toString());
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    errorCallback.invoke(e.getMessage());
-                } finally {
-                    mmr.release();
-                }
-            }
+        if(options.getBoolean("blured")){
+            getBluredImages = options.getBoolean("blured");
         }
-    }*/
+
+
+        if(options.hasKey("artist")){
+           getArtistFromSong = options.getBoolean("artist");
+        }
+
+        if(options.hasKey("duration")){
+            getDurationFromSong = options.getBoolean("duration");
+        }
+
+        if(options.hasKey("title")){
+            getTitleFromSong = options.getBoolean("title");
+        }
+
+        if(options.hasKey("id")){
+            getIDFromSong = options.getBoolean("id");
+        }
+
+        if(options.hasKey("cover")){
+            getCoverFromSong = options.getBoolean("cover");
+        }
+
+        if(options.hasKey("genre")){
+            getGenreFromSong = options.getBoolean("genre");
+        }
+
+        if(options.hasKey("album")){
+            getAlbumFromSong = options.getBoolean("album");
+        }
+
+        if(options.hasKey("date")){
+            getDateFromSong =  options.getBoolean("date");
+        }
+
+        if(options.hasKey("comments")){
+            getCommentsFromSong = options.getBoolean("comments");
+        }
+
+        if(options.hasKey("lyrics")){
+            getLyricsFromSong = options.getBoolean("lyrics");
+        }
+
+        int optionMinimumDuration = options.getInt("minimumSongDuration");
+
+        if(optionMinimumDuration > 0){
+           minimumSongDuration = optionMinimumDuration;
+        }else{
+            minimumSongDuration = 10000;
+        }
+
+        Thread bgThread = new Thread(null,
+                new Runnable() {
+                    @Override
+                    public void run() {
+
+                        ContentResolver musicResolver = getCurrentActivity().getContentResolver();
+                        Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                        Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
+
+                        if (musicCursor != null && musicCursor.moveToFirst()) {
+
+                            if (musicCursor.getCount() > 0) {
+                                WritableArray jsonArray = new WritableNativeArray();
+                                WritableMap items;
+                                FFmpegMediaMetadataRetriever mmr = new FFmpegMediaMetadataRetriever();
+
+                                int idColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
+
+                                try {
+                                    do {
+                                        try {
+                                            items = new WritableNativeMap();
+
+                                            long songId = musicCursor.getLong(idColumn);
+
+                                            if (getIDFromSong) {
+                                                String str = String.valueOf(songId);
+                                                items.putString("id", str);
+                                            }
+
+                                            String songPath = musicCursor.getString(musicCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                                            MP3File mp3file = new MP3File(songPath);
+
+                                            if(songPath != null && songPath != ""){
+
+                                                String fileName = songPath.substring(songPath.lastIndexOf("/") + 1);
+
+                                                //by default, always return path and fileName
+                                                items.putString("path", songPath);
+                                                items.putString("fileName", fileName);
+
+                                                mmr.setDataSource(songPath);
+
+                                                String songTimeDuration = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
+                                                int songIntDuration = Integer.parseInt(songTimeDuration);
+
+                                                //verify that is the minimum duration
+                                                if(songIntDuration >= minimumSongDuration) {
+
+
+                                                    if (getAlbumFromSong) {
+                                                        //String songAlbum = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+                                                        String songAlbum = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_ALBUM);
+                                                        items.putString("album", songAlbum);
+                                                    }
+
+                                                    if (getArtistFromSong) {
+                                                        //String songArtist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+                                                        String songArtist = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_ARTIST);
+                                                        items.putString("author", songArtist);
+                                                    }
+
+
+                                                    if (getTitleFromSong) {
+                                                        //String songTitle = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+                                                        String songTitle = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_TITLE);
+                                                        items.putString("title", songTitle);
+                                                    }
+
+                                                    if (getGenreFromSong) {
+                                                        //String songGenre = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
+                                                        String songGenre = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_GENRE);
+                                                        items.putString("genre", songGenre);
+                                                    }
+
+                                                    if (getDurationFromSong) {
+                                                        //musicCursor.getString(musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
+                                                        items.putString("duration", songTimeDuration);
+                                                    }
+
+                                                    if (getCommentsFromSong) {
+                                                        items.putString("comments", mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_COMMENT));
+                                                    }
+
+                                                    if (getDateFromSong) {
+                                                        items.putString("date", mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DATE));
+                                                    }
+
+                                                    if(getLyricsFromSong){
+                                                        String lyrics = mp3file.getID3v2Tag().getSongLyric();
+                                                        items.putString("lyrics",lyrics);
+                                                    }
+
+                                                    if (getCoverFromSong) {
+
+                                                        ReactNativeFileManager fcm = new ReactNativeFileManager();
+
+                                                        String encoded = "";
+                                                        String blurred = "";
+                                                        byte[] albumImageData = mmr.getEmbeddedPicture();
+
+                                                        if (albumImageData != null) {
+                                                            Bitmap songImage = BitmapFactory.decodeByteArray(albumImageData, 0, albumImageData.length);
+
+                                                            try {
+                                                                String pathToImg = Environment.getExternalStorageDirectory() + "/" + songId + ".jpg";
+                                                                encoded = fcm.saveImageToStorageAndGetPath(pathToImg, songImage);
+                                                                items.putString("cover", "file://" + encoded);
+                                                            } catch (Exception e) {
+                                                                // Just let images empty
+                                                                Log.e("error in image",e.getMessage());
+                                                            }
+
+                                                            if (getBluredImages) {
+                                                                try {
+                                                                    String pathToImg = Environment.getExternalStorageDirectory() + "/" + songId + "-blur.jpg";
+                                                                    blurred = fcm.saveBlurImageToStorageAndGetPath(pathToImg, songImage);
+                                                                    items.putString("blur", "file://" + blurred);
+                                                                } catch (Exception e) {
+                                                                    Log.e("error in image-blured",e.getMessage());
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+
+
+                                                    jsonArray.pushMap(items);
+                                                }
+                                            }
+
+                                        } catch (Exception e) {
+                                            // An error in one message should not prevent from getting the rest
+                                            // There are cases when a corrupted file can't be read and a RuntimeException is raised
+
+                                            // Let's discuss how to deal with these kind of exceptions
+
+                                            continue; // This is redundant, but adds meaning
+                                        }
+                                    } while (musicCursor.moveToNext());
+
+                                    successCallback.invoke(jsonArray);
+                                } catch (RuntimeException e) {
+                                    errorCallback.invoke(e.toString());
+                                } catch (Exception e) {
+                                    // TODO Auto-generated catch block
+                                    errorCallback.invoke(e.getMessage());
+                                } finally {
+                                    mmr.release();
+                                }
+                            }
+                        }
+
+                    }
+                },"asyncTask", 1024
+        );
+        bgThread.start();
+    }
 }

@@ -1,18 +1,18 @@
 
 Pod::Spec.new do |s|
-  s.name         = "RNReatNativeGetMusicFiles"
+  s.name         = "RNReactNativeGetMusicFiles"
   s.version      = "1.0.0"
-  s.summary      = "RNReatNativeGetMusicFiles"
+  s.summary      = "RNReactNativeGetMusicFiles"
   s.description  = <<-DESC
-                  RNReatNativeGetMusicFiles
+                  RNReactNativeGetMusicFiles
                    DESC
   s.homepage     = ""
   s.license      = "MIT"
   # s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
   s.author             = { "author" => "author@domain.cn" }
   s.platform     = :ios, "7.0"
-  s.source       = { :git => "https://github.com/author/RNReatNativeGetMusicFiles.git", :tag => "master" }
-  s.source_files  = "RNReatNativeGetMusicFiles/**/*.{h,m}"
+  s.source       = { :git => "https://github.com/author/RNReactNativeGetMusicFiles.git", :tag => "master" }
+  s.source_files  = "RNReactNativeGetMusicFiles/**/*.{h,m}"
   s.requires_arc = true
 
 

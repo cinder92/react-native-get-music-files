@@ -1,6 +1,8 @@
 package com.reactlibrary;
 
 import android.graphics.Bitmap;
+import android.util.Base64;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -13,21 +15,28 @@ import java.io.IOException;
 
 public class ReactNativeFileManager extends ReactNativeBlurImage{
     public String saveImageToStorageAndGetPath(String pathToImg, Bitmap songImage) throws IOException {
-        if (songImage != null) {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            songImage.compress(Bitmap.CompressFormat.JPEG, 60, byteArrayOutputStream);
-            byte[] byteArray = byteArrayOutputStream.toByteArray();
+        try{
 
-            if(byteArray != null) {
-                this.saveToStorage(pathToImg, byteArray);
+            if (songImage != null) {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                songImage.compress(Bitmap.CompressFormat.JPEG, 60, byteArrayOutputStream);
+                byte[] byteArray = byteArrayOutputStream.toByteArray();
+                String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                byte[] imageByte = Base64.decode(encodedImage, Base64.DEFAULT);
 
-                return pathToImg;
+                if(byteArray != null) {
+                    saveToStorage(pathToImg, imageByte);
+
+                    return pathToImg;
+                }
             }
+
+        } catch (IOException e){
+            Log.e("Error savingImageAfter",e.getMessage());
         }
 
-        return null;
+        return "";
     }
-
 
 
     public void saveToStorage(String pathToImg, byte[] imageBytes) throws IOException {
@@ -36,6 +45,8 @@ public class ReactNativeFileManager extends ReactNativeBlurImage{
             File filePath = new File(pathToImg);
             fos = new FileOutputStream(filePath, true);
             fos.write(imageBytes);
+        } catch (IOException e){
+            Log.e("Error saving image => ",e.getMessage());
         } finally {
             if (fos != null) {
                 fos.flush();

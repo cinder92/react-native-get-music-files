@@ -1,6 +1,31 @@
 
-import { NativeModules } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
-const { RNReatNativeGetMusicFiles } = NativeModules;
+const { RNReactNativeGetMusicFiles } = NativeModules;
 
-export default RNReatNativeGetMusicFiles;
+const MusicFiles = {
+    getAll(options){
+
+        return new Promise((resolve, reject) => {
+
+            if(Platform.OS === "android"){
+                RNReactNativeGetMusicFiles.getAll(options,(response) => {
+                    resolve(response);
+                },(error) => {
+                    reject(error);
+                });
+            }else{
+                RNReactNativeGetMusicFiles.getAll(options, (tracks) => {
+                    if(tracks.length > 0){
+                        resolve(tracks);
+                    }else{
+                        reject(false);
+                    }
+                });
+            }
+
+        });
+
+    }
+}
+export default MusicFiles;
