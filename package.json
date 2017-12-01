@@ -1,25 +1,16 @@
 
 {
-  "name": "react-native-get-music-files",
-  "version": "2.0.1",
+  "name": "react-native-reat-native-get-music-files",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "react-native",
-    "music",
-    "files",
-    "ios",
-    "android",
-    "blur"
+    "react-native"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/cinder92/react-native-get-music-files.git"
-  },
-  "author": "Dante Cervantes",
+  "author": "",
   "license": "",
   "peerDependencies": {
     "react-native": "^0.41.2",

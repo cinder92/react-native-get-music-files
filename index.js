@@ -6,7 +6,7 @@ const { RNReactNativeGetMusicFiles } = NativeModules;
 const MusicFiles = {
     getAll(options){
 
-        return new Promise((resolve, reject) => {
+        return new Promise((reject, resolve) => {
 
             if(Platform.OS === "android"){
                 RNReactNativeGetMusicFiles.getAll(options,(response) => {

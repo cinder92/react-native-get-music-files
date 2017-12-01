@@ -10,6 +10,8 @@ import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
+import android.util.Base64;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,7 +22,6 @@ import com.reactlibrary.ReactNativeFileManager;
 public class ReactNativeBlurImage extends Application {
 
     private static final String TAG = "Blur";
-    private ReactNativeFileManager fcm;
     private static Context mContext;
 
     public void onCreate() {
@@ -28,23 +29,11 @@ public class ReactNativeBlurImage extends Application {
         mContext = getApplicationContext();
     }
 
-    @SuppressLint("NewApi")
-    public static Bitmap fastBlur(Context context, Bitmap sentBitmap, int radius) {
+    public static Bitmap fastblur(Bitmap sentBitmap, float scale, int radius) {
 
-        if (Build.VERSION.SDK_INT > 16) {
-            Bitmap bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
-
-            final RenderScript rs = RenderScript.create(context);
-            final Allocation input = Allocation.createFromBitmap(rs, sentBitmap, Allocation.MipmapControl.MIPMAP_NONE,
-                    Allocation.USAGE_SCRIPT);
-            final Allocation output = Allocation.createTyped(rs, input.getType());
-            final ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-            script.setRadius(radius);
-            script.setInput(input);
-            script.forEach(output);
-            output.copyTo(bitmap);
-            return bitmap;
-        }
+        int width = Math.round(sentBitmap.getWidth() * scale);
+        int height = Math.round(sentBitmap.getHeight() * scale);
+        sentBitmap = Bitmap.createScaledBitmap(sentBitmap, width, height, false);
 
         Bitmap bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
 
@@ -56,7 +45,7 @@ public class ReactNativeBlurImage extends Application {
         int h = bitmap.getHeight();
 
         int[] pix = new int[w * h];
-        // Log.e("pix", w + " " + h + " " + pix.length);
+        Log.e("pix", w + " " + h + " " + pix.length);
         bitmap.getPixels(pix, 0, w, 0, 0, w, h);
 
         int wm = w - 1;
@@ -67,7 +56,8 @@ public class ReactNativeBlurImage extends Application {
         int r[] = new int[wh];
         int g[] = new int[wh];
         int b[] = new int[wh];
-        int rsum, gsum, bsum, x, y, i, p, yp, yi, yw;
+        int a[] = new int[wh];
+        int rsum, gsum, bsum, asum, x, y, i, p, yp, yi, yw;
         int vmin[] = new int[Math.max(w, h)];
 
         int divsum = (div + 1) >> 1;
@@ -79,35 +69,40 @@ public class ReactNativeBlurImage extends Application {
 
         yw = yi = 0;
 
-        int[][] stack = new int[div][3];
+        int[][] stack = new int[div][4];
         int stackpointer;
         int stackstart;
         int[] sir;
         int rbs;
         int r1 = radius + 1;
-        int routsum, goutsum, boutsum;
-        int rinsum, ginsum, binsum;
+        int routsum, goutsum, boutsum, aoutsum;
+        int rinsum, ginsum, binsum, ainsum;
 
         for (y = 0; y < h; y++) {
-            rinsum = ginsum = binsum = routsum = goutsum = boutsum = rsum = gsum = bsum = 0;
+            rinsum = ginsum = binsum = ainsum = routsum = goutsum = boutsum = aoutsum = rsum = gsum = bsum = asum = 0;
             for (i = -radius; i <= radius; i++) {
                 p = pix[yi + Math.min(wm, Math.max(i, 0))];
                 sir = stack[i + radius];
                 sir[0] = (p & 0xff0000) >> 16;
                 sir[1] = (p & 0x00ff00) >> 8;
                 sir[2] = (p & 0x0000ff);
+                sir[3] = 0xff & (p >> 24);
+
                 rbs = r1 - Math.abs(i);
                 rsum += sir[0] * rbs;
                 gsum += sir[1] * rbs;
                 bsum += sir[2] * rbs;
+                asum += sir[3] * rbs;
                 if (i > 0) {
                     rinsum += sir[0];
                     ginsum += sir[1];
                     binsum += sir[2];
+                    ainsum += sir[3];
                 } else {
                     routsum += sir[0];
                     goutsum += sir[1];
                     boutsum += sir[2];
+                    aoutsum += sir[3];
                 }
             }
             stackpointer = radius;
@@ -117,10 +112,12 @@ public class ReactNativeBlurImage extends Application {
                 r[yi] = dv[rsum];
                 g[yi] = dv[gsum];
                 b[yi] = dv[bsum];
+                a[yi] = dv[asum];
 
                 rsum -= routsum;
                 gsum -= goutsum;
                 bsum -= boutsum;
+                asum -= aoutsum;
 
                 stackstart = stackpointer - radius + div;
                 sir = stack[stackstart % div];
@@ -128,6 +125,7 @@ public class ReactNativeBlurImage extends Application {
                 routsum -= sir[0];
                 goutsum -= sir[1];
                 boutsum -= sir[2];
+                aoutsum -= sir[3];
 
                 if (y == 0) {
                     vmin[x] = Math.min(x + radius + 1, wm);
@@ -137,14 +135,17 @@ public class ReactNativeBlurImage extends Application {
                 sir[0] = (p & 0xff0000) >> 16;
                 sir[1] = (p & 0x00ff00) >> 8;
                 sir[2] = (p & 0x0000ff);
+                sir[3] = 0xff & (p >> 24);
 
                 rinsum += sir[0];
                 ginsum += sir[1];
                 binsum += sir[2];
+                ainsum += sir[3];
 
                 rsum += rinsum;
                 gsum += ginsum;
                 bsum += binsum;
+                asum += ainsum;
 
                 stackpointer = (stackpointer + 1) % div;
                 sir = stack[(stackpointer) % div];
@@ -152,17 +153,19 @@ public class ReactNativeBlurImage extends Application {
                 routsum += sir[0];
                 goutsum += sir[1];
                 boutsum += sir[2];
+                aoutsum += sir[3];
 
                 rinsum -= sir[0];
                 ginsum -= sir[1];
                 binsum -= sir[2];
+                ainsum -= sir[3];
 
                 yi++;
             }
             yw += w;
         }
         for (x = 0; x < w; x++) {
-            rinsum = ginsum = binsum = routsum = goutsum = boutsum = rsum = gsum = bsum = 0;
+            rinsum = ginsum = binsum = ainsum = routsum = goutsum = boutsum = aoutsum = rsum = gsum = bsum = asum = 0;
             yp = -radius * w;
             for (i = -radius; i <= radius; i++) {
                 yi = Math.max(0, yp) + x;
@@ -172,21 +175,25 @@ public class ReactNativeBlurImage extends Application {
                 sir[0] = r[yi];
                 sir[1] = g[yi];
                 sir[2] = b[yi];
+                sir[3] = a[yi];
 
                 rbs = r1 - Math.abs(i);
 
                 rsum += r[yi] * rbs;
                 gsum += g[yi] * rbs;
                 bsum += b[yi] * rbs;
+                asum += a[yi] * rbs;
 
                 if (i > 0) {
                     rinsum += sir[0];
                     ginsum += sir[1];
                     binsum += sir[2];
+                    ainsum += sir[3];
                 } else {
                     routsum += sir[0];
                     goutsum += sir[1];
                     boutsum += sir[2];
+                    aoutsum += sir[3];
                 }
 
                 if (i < hm) {
@@ -196,12 +203,12 @@ public class ReactNativeBlurImage extends Application {
             yi = x;
             stackpointer = radius;
             for (y = 0; y < h; y++) {
-                // Preserve alpha channel: ( 0xff000000 & pix[yi] )
-                pix[yi] = (0xff000000 & pix[yi]) | (dv[rsum] << 16) | (dv[gsum] << 8) | dv[bsum];
+                pix[yi] = (dv[asum] << 24) | (dv[rsum] << 16) | (dv[gsum] << 8) | dv[bsum];
 
                 rsum -= routsum;
                 gsum -= goutsum;
                 bsum -= boutsum;
+                asum -= aoutsum;
 
                 stackstart = stackpointer - radius + div;
                 sir = stack[stackstart % div];
@@ -209,23 +216,28 @@ public class ReactNativeBlurImage extends Application {
                 routsum -= sir[0];
                 goutsum -= sir[1];
                 boutsum -= sir[2];
+                aoutsum -= sir[3];
 
                 if (x == 0) {
                     vmin[y] = Math.min(y + r1, hm) * w;
                 }
                 p = x + vmin[y];
 
+
                 sir[0] = r[p];
                 sir[1] = g[p];
                 sir[2] = b[p];
+                sir[3] = a[p];
 
                 rinsum += sir[0];
                 ginsum += sir[1];
                 binsum += sir[2];
+                ainsum += sir[3];
 
                 rsum += rinsum;
                 gsum += ginsum;
                 bsum += binsum;
+                asum += ainsum;
 
                 stackpointer = (stackpointer + 1) % div;
                 sir = stack[stackpointer];
@@ -233,40 +245,50 @@ public class ReactNativeBlurImage extends Application {
                 routsum += sir[0];
                 goutsum += sir[1];
                 boutsum += sir[2];
+                aoutsum += sir[3];
 
                 rinsum -= sir[0];
                 ginsum -= sir[1];
                 binsum -= sir[2];
+                ainsum -= sir[3];
 
                 yi += w;
             }
         }
 
+        Log.e("pix", w + " " + h + " " + pix.length);
         bitmap.setPixels(pix, 0, w, 0, 0, w, h);
+
         return (bitmap);
     }
 
     public String saveBlurImageToStorageAndGetPath(String pathToImg, Bitmap songImage) throws IOException {
-        if (songImage != null) {
-            ReactNativeBlurImage blur = new ReactNativeBlurImage();
-            Context context = this.getApplicationContext();
-            Bitmap blurimg = blur.fastBlur(context, songImage, 20);
+        try{
+            if (songImage != null) {
+                ReactNativeBlurImage blur = new ReactNativeBlurImage();
+                Bitmap blurimg = blur.fastblur(songImage, 1, 20);
 
-            if (blurimg != null) {
-                ByteArrayOutputStream byteArrayOutputStreams = new ByteArrayOutputStream();
+                ReactNativeFileManager fcm = new ReactNativeFileManager();
 
-                blurimg.compress(Bitmap.CompressFormat.JPEG, 60, byteArrayOutputStreams);
-                byte[] byteArrays = byteArrayOutputStreams.toByteArray();
+                if (blurimg != null) {
+                    ByteArrayOutputStream byteArrayOutputStreams = new ByteArrayOutputStream();
+                    blurimg.compress(Bitmap.CompressFormat.JPEG, 60, byteArrayOutputStreams);
+                    byte[] byteArrays = byteArrayOutputStreams.toByteArray();
+                    String encodedImage = Base64.encodeToString(byteArrays, Base64.DEFAULT);
+                    byte[] imageByte = Base64.decode(encodedImage, Base64.DEFAULT);
 
-                if (byteArrays != null) {
-                    fcm.saveToStorage(pathToImg, byteArrays);
+                    if (byteArrays != null) {
+                        fcm.saveToStorage(pathToImg, imageByte);
 
-                    return pathToImg;
+                        return pathToImg;
+                    }
+
                 }
-
             }
+        } catch (IOException e){
+            Log.e("Error savingImageBlur",e.getMessage());
         }
 
-        return null;
+        return "";
     }
 }
