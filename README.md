@@ -72,6 +72,38 @@ MusicFiles.getAll({
 },(response) => {
     alert(JSON.stringify(response));
 });
+
+//In order to get blocks of songs, for fix performance issues at least in Android, use next
+
+componentWillMount() {
+    DeviceEventEmitter.addListener(
+        'onBatchReceived',
+        (params) => {
+            this.setState({songs : [
+                ...this.state.songs,
+                ...params.batch
+            ]});
+        }
+    )
+}
+
+componentDidMount(){
+        MusicFiles.getAll({
+            id : true,
+            blured : false,
+            artist : true,
+            duration : true, //default : true
+            cover : true, //default : true,
+            title : true,
+            cover : true,
+            date : true,
+            lyrics : true,
+            batchNumber : 5, //get 5 songs per batch
+            minimumSongDuration : 10000, //in miliseconds,
+            fields : ['title','artwork','duration','artist','genre','lyrics','albumTitle']
+        });
+}
+
 ```
 
 MusicFiles returns an array of objects where you can loop, something like this.
@@ -100,5 +132,6 @@ MusicFiles returns an array of objects where you can loop, something like this.
 - [x] Android Version
 - [x] Optional parameters
 - [x] Speed up retriving songs (run in another thread)
+- [x] Batching files
 
 PR are welcome!
