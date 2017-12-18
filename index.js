@@ -9,10 +9,10 @@ const MusicFiles = {
         return new Promise((reject, resolve) => {
 
             if(Platform.OS === "android"){
-                RNReactNativeGetMusicFiles.getAll(options,(response) => {
-                    resolve(response);
-                },(error) => {
+                RNReactNativeGetMusicFiles.getAll(options,(error) => {
                     reject(error);
+                },(response) => {
+                    resolve(response);
                 });
             }else{
                 RNReactNativeGetMusicFiles.getAll(options, (tracks) => {
