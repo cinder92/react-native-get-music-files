@@ -48,6 +48,7 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
     private boolean getLyricsFromSong = false;
     private int minimumSongDuration = 0;
     private int songsPerIteration = 0;
+    private String[] STAR = { "*" };
 
     public RNReactNativeGetMusicFilesModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -129,7 +130,7 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                         String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
                         String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
-                        Cursor musicCursor = musicResolver.query(musicUri, null, selection, null, sortOrder);
+                        Cursor musicCursor = musicResolver.query(musicUri, STAR, selection, null, sortOrder);
 
                         int pointer = 0;
 
