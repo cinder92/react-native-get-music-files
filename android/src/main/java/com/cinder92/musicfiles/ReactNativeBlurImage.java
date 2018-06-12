@@ -1,4 +1,4 @@
-package com.reactlibrary;
+package com.cinder92.musicfiles;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
@@ -16,7 +16,7 @@ import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import com.reactlibrary.ReactNativeFileManager;
+import com.cinder92.musicfiles.ReactNativeFileManager;
 
 
 public class ReactNativeBlurImage extends Application {

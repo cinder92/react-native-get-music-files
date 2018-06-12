@@ -1,4 +1,4 @@
-package com.reactlibrary;
+package com.cinder92.musicfiles;
 
 import android.graphics.Bitmap;
 import android.util.Base64;

@@ -9,19 +9,19 @@ const MusicFiles = {
         return new Promise((resolve, reject) => {
 
             if(Platform.OS === "android"){
-                RNReactNativeGetMusicFiles.getAll(options,(error) => {
-                    reject(error);
-                },(response) => {
-                    resolve(response);
+                RNReactNativeGetMusicFiles.getAll(options,(tracks) => {
+                    resolve(tracks);
+                },(error) => {
+                    resolve(error);
                 });
             }else{
                 RNReactNativeGetMusicFiles.getAll(options, (tracks) => {
                     if(tracks.length > 0){
                         resolve(tracks);
                     }else{
-                        reject(false);
+                        resolve("Error, you don't have any tracks");
                     }
-                });
+                });   
             }
 
         });
