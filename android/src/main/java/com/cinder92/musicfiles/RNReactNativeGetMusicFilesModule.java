@@ -8,6 +8,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
 
+import java.io.File;
+
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -33,6 +35,8 @@ import com.cinder92.musicfiles.ReactNativeFileManager;
 
 import org.farng.mp3.MP3File;
 
+import java.io.File;
+
 
 public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule {
 
@@ -43,6 +47,7 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
     private boolean getTitleFromSong = true;
     private boolean getIDFromSong = false;
     private boolean getCoverFromSong = false;
+    private String coverFolder = "/";
     private boolean getGenreFromSong = false;
     private boolean getAlbumFromSong = true;
     private boolean getDateFromSong = false;
@@ -86,6 +91,10 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
 
         if (options.hasKey("id")) {
             getIDFromSong = options.getBoolean("id");
+        }
+
+        if (options.hasKey("coverFolder")) {
+            coverFolder = options.getString("coverFolder");
         }
 
         if (options.hasKey("cover")) {
@@ -252,9 +261,19 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                                             Bitmap songImage = BitmapFactory.decodeByteArray(albumImageData, 0, albumImageData.length);
 
                                             try {
-                                                String pathToImg = Environment.getExternalStorageDirectory() + "/" + songId + ".jpg";
-                                                encoded = fcm.saveImageToStorageAndGetPath(pathToImg, songImage);
-                                                items.putString("cover", "file://" + encoded);
+                                                File covers = new File(Environment.getExternalStorageDirectory() +File.separator+ coverFolder);
+                                                boolean success = true;
+                                                if (!covers.exists()) {
+                                                    success = covers.mkdirs();
+                                                }
+                                                if (success) {
+                                                    String pathToImg = Environment.getExternalStorageDirectory() + File.separator + coverFolder + File.separator + songId + ".jpg";
+                                                    encoded = fcm.saveImageToStorageAndGetPath(pathToImg, songImage);
+                                                    items.putString("cover", "file://" + encoded);
+                                                } else {
+                                                    // Do something else on failure 
+                                                }
+
                                             } catch (Exception e) {
                                                 // Just let images empty
                                                 Log.e("error in image", e.getMessage());

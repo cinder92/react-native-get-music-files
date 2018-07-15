@@ -58,6 +58,7 @@ MusicFiles.getAll({
     genre : true,
     title : true,
     cover : true,
+    coverFolder: 'myApp/covers' // will save covers to this folder
     minimumSongDuration : 10000 // get songs bigger than 10000 miliseconds duration,
     fields : ['title','albumTitle','genre','lyrics','artwork','duration'] // for iOs Version
 }).then(tracks => {
