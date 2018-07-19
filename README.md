@@ -58,7 +58,11 @@ MusicFiles.getAll({
     genre : true,
     title : true,
     cover : true,
-    coverFolder: 'myApp/covers' // will save covers to this folder
+    coverFolder: 'myApp' // Android only - will save covers, icons and blurred images to this folder - defaults to "/"
+    icon: true, // Android only - generates icons from cover images
+    iconSize: 50, // Android only - icon size, defaults to 125
+    coverResizeRatio: 0.8, // Android only - defaults to 1
+    coverSize: 200, // Android only - overrides coverResizeRatio with a fixed number 
     minimumSongDuration : 10000 // get songs bigger than 10000 miliseconds duration,
     fields : ['title','albumTitle','genre','lyrics','artwork','duration'] // for iOs Version
 }).then(tracks => {
