@@ -26,6 +26,23 @@ const MusicFiles = {
 
         });
 
+    },
+
+    getSongById(options){
+        return new Promise((resolve, reject) => {
+
+            if(Platform.OS === "android"){
+                RNReactNativeGetMusicFiles.getSongById(options,(tracks) => {
+                    resolve(tracks);
+                },(error) => {
+                    resolve(error);
+                });
+            }else{
+               
+            }
+
+        });
+
     }
 }
 export default MusicFiles;

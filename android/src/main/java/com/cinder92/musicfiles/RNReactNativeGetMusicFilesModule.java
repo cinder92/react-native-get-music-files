@@ -72,6 +72,53 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
     }
 
     @ReactMethod
+    public void getSongById(ReadableMap options, final Callback successCallback, final Callback errorCallback) {
+        WritableArray jsonArray = new WritableNativeArray();
+        WritableMap item = new WritableNativeMap();
+        if (options.hasKey("songUri")) {
+            Uri songUri = Uri.parse( "content://"+(options.getString("songUri")));
+            String scheme = songUri.getScheme();
+            String title = "";
+            String artist = "";
+            String id = "";
+            String album = "";
+            String duration = "";
+            if (scheme.equals("content")) {
+                String[] proj = { MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ARTIST,
+                        MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media._ID, };
+                Cursor cursor = getCurrentActivity().getContentResolver().query(songUri, proj, null, null, null);
+                if (cursor != null && cursor.getCount() > 0) {
+                    cursor.moveToFirst();
+                    if (cursor.getColumnIndex(MediaStore.Audio.Media.TITLE) != -1) {
+                        title = cursor.getString(0);
+                        artist = cursor.getString(1);
+                        id = cursor.getString(4);
+                        album = cursor.getString(2);
+                        duration = cursor.getString(3);
+                    }
+                }
+            } else {
+                title = "e";
+                artist = "e";
+                id = "e";
+                album = "e";
+                duration = "e";
+            }
+            item.putString("id", String.valueOf(id));
+            item.putString("title", String.valueOf(title));
+            item.putString("artist", String.valueOf(artist));
+            item.putString("album", String.valueOf(album));
+            item.putString("duration", String.valueOf(duration));
+            jsonArray.pushMap(item);
+            successCallback.invoke(jsonArray);
+            Log.e("musica", String.valueOf(title));
+        } else {
+            errorCallback.invoke("No song Uri");
+            Log.e("musica", "no ID");
+        }
+    }
+
+    @ReactMethod
     public void getAll(ReadableMap options, final Callback successCallback, final Callback errorCallback) {
 
         if (options.hasKey("blured")) {
@@ -167,8 +214,12 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
             selection += " AND " + MediaStore.Audio.Media.DURATION + " >= " + minimumSongDuration;
         }
 
+        String[] projection = { MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media._ID, };
+
         String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
-        Cursor musicCursor = musicResolver.query(musicUri, STAR, selection, null, sortOrder);
+        Cursor musicCursor = musicResolver.query(musicUri, projection, selection, null, sortOrder);
 
         // Log.i("Tienes => ",Integer.toString(musicCursor.getCount()));
 
@@ -193,12 +244,11 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                             long songId = musicCursor.getLong(idColumn);
 
                             if (getIDFromSong) {
-                                String str = String.valueOf(songId);
+                                String str = musicCursor.getString(5);
                                 items.putString("id", str);
                             }
 
-                            String songPath = musicCursor
-                                    .getString(musicCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                            String songPath = musicCursor.getString(4);
                             // MP3File mp3file = new MP3File(songPath);
 
                             Log.e("musica", songPath);
@@ -211,29 +261,28 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                                 items.putString("path", songPath);
                                 items.putString("fileName", fileName);
 
-                                mmr.setDataSource(songPath);
-
                                 // String songTimeDuration =
                                 // mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
-                                String songTimeDuration = mmr.extractMetadata(mmr.METADATA_KEY_DURATION);
+                                String songTimeDuration = musicCursor.getString(3);
                                 int songIntDuration = Integer.parseInt(songTimeDuration);
 
                                 if (getAlbumFromSong) {
-                                    String songAlbum = mmr.extractMetadata(mmr.METADATA_KEY_ALBUM);
+                                    String songAlbum = musicCursor.getString(2);
+
                                     // String songAlbum =
                                     // mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_ALBUM);
                                     items.putString("album", songAlbum);
                                 }
 
                                 if (getArtistFromSong) {
-                                    String songArtist = mmr.extractMetadata(mmr.METADATA_KEY_ARTIST);
+                                    String songArtist = musicCursor.getString(1);
                                     // String songArtist =
                                     // mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_ARTIST);
                                     items.putString("author", songArtist);
                                 }
 
                                 if (getTitleFromSong) {
-                                    String songTitle = mmr.extractMetadata(mmr.METADATA_KEY_TITLE);
+                                    String songTitle = musicCursor.getString(0);
                                     // String songTitle =
                                     // mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_TITLE);
                                     items.putString("title", songTitle);
@@ -262,7 +311,7 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                                  */
 
                                 if (getCoverFromSong) {
-
+                                    mmr.setDataSource(songPath);
                                     ReactNativeFileManager fcm = new ReactNativeFileManager();
 
                                     String encoded = "";

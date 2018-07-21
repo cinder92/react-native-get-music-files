@@ -1,19 +1,55 @@
-
 {
-  "name": "react-native-get-music-files",
-  "version": "1.0.0",
-  "description": "React Native package to get music files from local and sd for iOS and Android ",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "react-native"
+  "_args": [
+    [
+      "react-native-get-music-files@2.1.0",
+      "F:\\Git_2_Main_Projects\\AhangifyReactNative\\AhangifyReactNative"
+    ]
   ],
-  "author": "",
-  "license": "",
+  "_from": "react-native-get-music-files@2.1.0",
+  "_id": "react-native-get-music-files@2.1.0",
+  "_inBundle": false,
+  "_integrity": "sha512-wNAhTAzzga55itaJx59RWRsPRNp8AkvFWs04gE2TzV3/z1Jbje3hB590JVjGlD6uNtVwstHcOAZwct35ZjURHg==",
+  "_location": "/react-native-get-music-files",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "react-native-get-music-files@2.1.0",
+    "name": "react-native-get-music-files",
+    "escapedName": "react-native-get-music-files",
+    "rawSpec": "2.1.0",
+    "saveSpec": null,
+    "fetchSpec": "2.1.0"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/react-native-get-music-files/-/react-native-get-music-files-2.1.0.tgz",
+  "_spec": "2.1.0",
+  "_where": "F:\\Git_2_Main_Projects\\AhangifyReactNative\\AhangifyReactNative",
+  "author": {
+    "name": "Dante Cervantes"
+  },
+  "description": "React Native package to get music files from local and sd for iOS and Android ",
+  "keywords": [
+    "react-native",
+    "music",
+    "files",
+    "metadata",
+    "ios",
+    "android",
+    "react",
+    "native"
+  ],
+  "license": "IST",
+  "main": "index.js",
+  "name": "react-native-get-music-files",
   "peerDependencies": {
     "react-native": "^0.41.2",
     "react-native-windows": "0.41.0-rc.1"
-  }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "2.1.0"
 }
