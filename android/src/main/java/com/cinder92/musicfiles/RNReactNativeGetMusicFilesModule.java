@@ -72,21 +72,21 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
     }
 
     @ReactMethod
-    public void getSongById(ReadableMap options, final Callback successCallback, final Callback errorCallback) {
+    public void getSongByPath(ReadableMap options, final Callback successCallback, final Callback errorCallback) {
         WritableArray jsonArray = new WritableNativeArray();
         WritableMap item = new WritableNativeMap();
         if (options.hasKey("songUri")) {
-            Uri songUri = Uri.parse( "content://"+(options.getString("songUri")));
-            String scheme = songUri.getScheme();
+            String songUri = options.getString("songUri");
             String title = "";
             String artist = "";
             String id = "";
             String album = "";
             String duration = "";
-            if (scheme.equals("content")) {
+
                 String[] proj = { MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ARTIST,
                         MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media._ID, };
-                Cursor cursor = getCurrentActivity().getContentResolver().query(songUri, proj, null, null, null);
+                Uri musicUris = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                Cursor cursor = getCurrentActivity().getContentResolver().query(musicUris, proj, MediaStore.Audio.Media.DATA+ " like ? ", new String[] { songUri }, null);
                 if (cursor != null && cursor.getCount() > 0) {
                     cursor.moveToFirst();
                     if (cursor.getColumnIndex(MediaStore.Audio.Media.TITLE) != -1) {
@@ -96,25 +96,23 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                         album = cursor.getString(2);
                         duration = cursor.getString(3);
                     }
+                }else{
+                    String msg= "cursor is either null or empty ";
+                    Log.e("Musica", msg );
                 }
-            } else {
-                title = "e";
-                artist = "e";
-                id = "e";
-                album = "e";
-                duration = "e";
-            }
+
             item.putString("id", String.valueOf(id));
             item.putString("title", String.valueOf(title));
             item.putString("artist", String.valueOf(artist));
             item.putString("album", String.valueOf(album));
             item.putString("duration", String.valueOf(duration));
             jsonArray.pushMap(item);
+            
             successCallback.invoke(jsonArray);
-            Log.e("musica", String.valueOf(title));
         } else {
-            errorCallback.invoke("No song Uri");
+            
             Log.e("musica", "no ID");
+            errorCallback.invoke("No song Uri");
         }
     }
 

@@ -28,11 +28,11 @@ const MusicFiles = {
 
     },
 
-    getSongById(options){
+    getSongByPath(options){
         return new Promise((resolve, reject) => {
 
             if(Platform.OS === "android"){
-                RNReactNativeGetMusicFiles.getSongById(options,(tracks) => {
+                RNReactNativeGetMusicFiles.getSongByPath(options,(tracks) => {
                     resolve(tracks);
                 },(error) => {
                     resolve(error);
