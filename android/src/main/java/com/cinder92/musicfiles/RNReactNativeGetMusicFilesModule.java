@@ -35,31 +35,35 @@ import com.cinder92.musicfiles.ReactNativeFileManager;
 
 import org.farng.mp3.MP3File;
 
-import java.io.File;
-
 public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule {
 
     private final ReactApplicationContext reactContext;
-    private boolean getBluredImages = false;
+
     private boolean getArtistFromSong = false;
     private boolean getDurationFromSong = true;
     private boolean getTitleFromSong = true;
     private boolean getIDFromSong = false;
+    private boolean getCoversFromSongs = false;
+    private String coversFolder = "/";
+    private boolean getBluredImages = false;
+    private double coversResizeRatio = 1;
+    private boolean getIcons = false;
+    private int iconsSize = 125;
+    private int coversSize = 0;
+
     private boolean getCoverFromSong = false;
     private String coverFolder = "/";
+    private boolean getBluredImage = false;
     private double coverResizeRatio = 1;
     private boolean getIcon = false;
     private int iconSize = 125;
     private int coverSize = 0;
+
     private boolean getGenreFromSong = false;
     private boolean getAlbumFromSong = true;
-    private boolean getDateFromSong = false;
-    private boolean getCommentsFromSong = false;
-    private boolean getLyricsFromSong = false;
     private int minimumSongDuration = 0;
     private int songsPerIteration = 0;
     private int version = Build.VERSION.SDK_INT;
-    private String[] STAR = { "*" };
 
     public RNReactNativeGetMusicFilesModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -73,70 +77,9 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
 
     @ReactMethod
     public void getSongByPath(ReadableMap options, final Callback successCallback, final Callback errorCallback) {
-        WritableArray jsonArray = new WritableNativeArray();
-        WritableMap item = new WritableNativeMap();
-        if (options.hasKey("songUri")) {
-            String songUri = options.getString("songUri");
-            String title = "";
-            String artist = "";
-            String id = "";
-            String album = "";
-            String duration = "";
-
-                String[] proj = { MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ARTIST,
-                        MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media._ID, };
-                Uri musicUris = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                Cursor cursor = getCurrentActivity().getContentResolver().query(musicUris, proj, MediaStore.Audio.Media.DATA+ " like ? ", new String[] { songUri }, null);
-                if (cursor != null && cursor.getCount() > 0) {
-                    cursor.moveToFirst();
-                    if (cursor.getColumnIndex(MediaStore.Audio.Media.TITLE) != -1) {
-                        title = cursor.getString(0);
-                        artist = cursor.getString(1);
-                        id = cursor.getString(4);
-                        album = cursor.getString(2);
-                        duration = cursor.getString(3);
-                    }
-                }else{
-                    String msg= "cursor is either null or empty ";
-                    Log.e("Musica", msg );
-                }
-
-            item.putString("id", String.valueOf(id));
-            item.putString("title", String.valueOf(title));
-            item.putString("artist", String.valueOf(artist));
-            item.putString("album", String.valueOf(album));
-            item.putString("duration", String.valueOf(duration));
-            jsonArray.pushMap(item);
-            
-            successCallback.invoke(jsonArray);
-        } else {
-            
-            Log.e("musica", "no ID");
-            errorCallback.invoke("No song Uri");
-        }
-    }
-
-    @ReactMethod
-    public void getAll(ReadableMap options, final Callback successCallback, final Callback errorCallback) {
 
         if (options.hasKey("blured")) {
-            getBluredImages = options.getBoolean("blured");
-        }
-
-        if (options.hasKey("artist")) {
-            getArtistFromSong = options.getBoolean("artist");
-        }
-
-        if (options.hasKey("duration")) {
-            getDurationFromSong = options.getBoolean("duration");
-        }
-
-        if (options.hasKey("title")) {
-            getTitleFromSong = options.getBoolean("title");
-        }
-
-        if (options.hasKey("id")) {
-            getIDFromSong = options.getBoolean("id");
+            getBluredImage = options.getBoolean("blured");
         }
 
         if (options.hasKey("coverFolder")) {
@@ -160,6 +103,102 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
 
         if (options.hasKey("coverSize")) {
             coverSize = options.getInt("coverSize");
+        }
+
+        WritableArray jsonArray = new WritableNativeArray();
+        WritableMap item = new WritableNativeMap();
+        if (options.hasKey("songUri")) {
+            String songUri = options.getString("songUri");
+            String title = "";
+            String artist = "";
+            long id = -1;
+            String album = "";
+            String duration = "";
+
+            String[] proj = { MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM,
+                    MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DATA };
+            Uri musicUris = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+            Cursor cursor = getCurrentActivity().getContentResolver().query(musicUris, proj,
+                    MediaStore.Audio.Media.DATA + " like ? ", new String[] { songUri }, null);
+            if (cursor != null && cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                if (cursor.getColumnIndex(MediaStore.Audio.Media.TITLE) != -1) {
+                    title = cursor.getString(0);
+                    artist = cursor.getString(1);
+                    id = cursor.getLong(4);
+                    album = cursor.getString(2);
+                    duration = cursor.getString(3);
+                    songUri = cursor.getString(5);
+                    if (getCoverFromSong) {
+                        getCoverByPath(getBluredImage, coverFolder, coverResizeRatio, getIcon, iconSize, coverSize,
+                                songUri, id, item);
+                    }
+                }
+            } else {
+                String msg = "cursor is either null or empty ";
+                Log.e("Musica", msg);
+            }
+
+            item.putString("id", String.valueOf(id));
+            item.putString("songUri", String.valueOf(songUri));
+            item.putString("title", String.valueOf(title));
+            item.putString("artist", String.valueOf(artist));
+            item.putString("album", String.valueOf(album));
+            item.putString("duration", String.valueOf(duration));
+            jsonArray.pushMap(item);
+
+            successCallback.invoke(jsonArray);
+        } else {
+
+            Log.e("musica", "no ID");
+            errorCallback.invoke("No song Uri");
+        }
+    }
+
+    @ReactMethod
+    public void getAll(final ReadableMap options, final Callback successCallback, final Callback errorCallback) {
+
+        if (options.hasKey("blured")) {
+            getBluredImages = options.getBoolean("blured");
+        }
+
+        if (options.hasKey("artist")) {
+            getArtistFromSong = options.getBoolean("artist");
+        }
+
+        if (options.hasKey("duration")) {
+            getDurationFromSong = options.getBoolean("duration");
+        }
+
+        if (options.hasKey("title")) {
+            getTitleFromSong = options.getBoolean("title");
+        }
+
+        if (options.hasKey("id")) {
+            getIDFromSong = options.getBoolean("id");
+        }
+
+        if (options.hasKey("coverFolder")) {
+            coversFolder = options.getString("coverFolder");
+        }
+
+        if (options.hasKey("cover")) {
+            getCoversFromSongs = options.getBoolean("cover");
+        }
+
+        if (options.hasKey("coverResizeRatio")) {
+            coversResizeRatio = options.getDouble("coverResizeRatio");
+        }
+
+        if (options.hasKey("icon")) {
+            getIcons = options.getBoolean("icon");
+        }
+        if (options.hasKey("iconSize")) {
+            iconsSize = options.getInt("iconSize");
+        }
+
+        if (options.hasKey("coverSize")) {
+            coversSize = options.getInt("coverSize");
         }
 
         if (options.hasKey("genre")) {
@@ -191,19 +230,19 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
         }
 
         if (version <= 19) {
-            getSongs(successCallback, errorCallback);
+            getSongs(options, successCallback, errorCallback);
         } else {
             Thread bgThread = new Thread(null, new Runnable() {
                 @Override
                 public void run() {
-                    getSongs(successCallback, errorCallback);
+                    getSongs(options, successCallback, errorCallback);
                 }
             }, "asyncTask", 1024);
             bgThread.start();
         }
     }
 
-    private void getSongs(final Callback successCallback, final Callback errorCallback) {
+    private void getSongs(ReadableMap options, final Callback successCallback, final Callback errorCallback) {
         ContentResolver musicResolver = getCurrentActivity().getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
@@ -308,103 +347,10 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                                  * mp3file.getID3v2Tag().getSongLyric(); //items.putString("lyrics", lyrics); }
                                  */
 
-                                if (getCoverFromSong) {
-                                    mmr.setDataSource(songPath);
-                                    ReactNativeFileManager fcm = new ReactNativeFileManager();
+                                if (getCoversFromSongs) {
+                                    getCoverByPath(getBluredImages, coversFolder, coversResizeRatio, getIcons,
+                                            iconsSize, coversSize, songPath, songId, items);
 
-                                    String encoded = "";
-                                    String blurred = "";
-                                    try {
-                                        byte[] albumImageData = mmr.getEmbeddedPicture();
-
-                                        if (albumImageData != null) {
-                                            Bitmap songImage = BitmapFactory.decodeByteArray(albumImageData, 0,
-                                                    albumImageData.length);
-                                            Bitmap resized = songImage;
-                                            if (coverResizeRatio != 1 && coverSize == 0) {
-                                                resized = Bitmap.createScaledBitmap(songImage,
-                                                        (int) (songImage.getWidth() * coverResizeRatio),
-                                                        (int) (songImage.getHeight() * coverResizeRatio), true);
-                                            }
-
-                                            if (coverSize != 0) {
-                                                resized = Bitmap.createScaledBitmap(songImage, coverSize, coverSize,
-                                                        true);
-                                            }
-
-                                            try {
-                                                File covers = new File(Environment.getExternalStorageDirectory()
-                                                        + File.separator + coverFolder + File.separator + "covers");
-                                                boolean success = true;
-                                                if (!covers.exists()) {
-                                                    success = covers.mkdirs();
-                                                }
-                                                if (success) {
-                                                    String pathToImg = covers.getAbsolutePath() + "/covers" + songId
-                                                            + ".jpg";
-                                                    encoded = fcm.saveImageToStorageAndGetPath(pathToImg, resized);
-                                                    items.putString("cover", "file://" + encoded);
-                                                } else {
-                                                    // Do something else on failure
-                                                }
-
-                                            } catch (Exception e) {
-                                                // Just let images empty
-                                                Log.e("error in image", e.getMessage());
-                                            }
-
-                                            if (getBluredImages) {
-                                                try {
-                                                    File blured = new File(
-                                                            Environment.getExternalStorageDirectory() + File.separator
-                                                                    + coverFolder + File.separator + "blurred");
-                                                    boolean success = true;
-                                                    if (!blured.exists()) {
-                                                        success = blured.mkdirs();
-                                                    }
-                                                    if (success) {
-                                                        String pathToImg = blured.getAbsolutePath() + "/blurred"
-                                                                + songId + "-blur.jpg";
-                                                        blurred = fcm.saveBlurImageToStorageAndGetPath(pathToImg,
-                                                                songImage);
-                                                        items.putString("blur", "file://" + blurred);
-                                                    } else {
-                                                        // Do something else on failure
-                                                    }
-
-                                                } catch (Exception e) {
-                                                    // Just let images empty
-                                                    Log.e("error in image-blured", e.getMessage());
-                                                }
-                                            }
-                                            if (getIcon) {
-                                                try {
-                                                    File icons = new File(Environment.getExternalStorageDirectory()
-                                                            + File.separator + coverFolder + File.separator + "icons");
-                                                    boolean success = true;
-                                                    if (!icons.exists()) {
-                                                        success = icons.mkdirs();
-                                                    }
-                                                    if (success) {
-                                                        Bitmap icon = Bitmap.createScaledBitmap(songImage, iconSize,
-                                                                iconSize, true);
-                                                        String pathToIcon = icons.getAbsolutePath() + "/icons" + songId
-                                                                + "-icon.jpg";
-                                                        encoded = fcm.saveImageToStorageAndGetPath(pathToIcon, icon);
-                                                        items.putString("icon", "file://" + encoded);
-                                                    } else {
-                                                        // Do something else on failure
-                                                    }
-                                                } catch (Exception e) {
-                                                    // Just let images empty
-                                                    Log.e("error in icon", e.getMessage());
-                                                }
-
-                                            }
-                                        }
-                                    } catch (Exception e) {
-                                        Log.e("embedImage", "No embed image");
-                                    }
                                 }
 
                                 jsonArray.pushMap(items);
@@ -467,6 +413,98 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
         } else {
             Log.i("com.tests", "Something get wrong with musicCursor");
             errorCallback.invoke("Something get wrong with musicCursor");
+        }
+    }
+
+    public void getCoverByPath(Boolean getBluredImages, String coverFolder, Double coverResizeRatio, Boolean getIcon,
+            int iconSize, int coverSize, String songPath, long songId, WritableMap items) {
+
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        mmr.setDataSource(songPath);
+        ReactNativeFileManager fcm = new ReactNativeFileManager();
+        String encoded = "";
+        String blurred = "";
+        try {
+            byte[] albumImageData = mmr.getEmbeddedPicture();
+
+            if (albumImageData != null) {
+                Bitmap songImage = BitmapFactory.decodeByteArray(albumImageData, 0, albumImageData.length);
+                Bitmap resized = songImage;
+                if (coverResizeRatio != 1 && coverSize == 0) {
+                    resized = Bitmap.createScaledBitmap(songImage, (int) (songImage.getWidth() * coverResizeRatio),
+                            (int) (songImage.getHeight() * coverResizeRatio), true);
+                }
+
+                if (coverSize != 0) {
+                    resized = Bitmap.createScaledBitmap(songImage, coverSize, coverSize, true);
+                }
+
+                try {
+                    File covers = new File(Environment.getExternalStorageDirectory() + File.separator + coverFolder
+                            + File.separator + "covers");
+                    boolean success = true;
+                    if (!covers.exists()) {
+                        success = covers.mkdirs();
+                    }
+                    if (success) {
+                        String pathToImg = covers.getAbsolutePath() + "/covers" + songId + ".jpg";
+                        encoded = fcm.saveImageToStorageAndGetPath(pathToImg, resized);
+                        items.putString("cover", "file://" + encoded);
+                    } else {
+                        // Do something else on failure
+                    }
+
+                } catch (Exception e) {
+                    // Just let images empty
+                    Log.e("error in image", e.getMessage());
+                }
+
+                if (getBluredImages) {
+                    try {
+                        File blured = new File(Environment.getExternalStorageDirectory() + File.separator + coverFolder
+                                + File.separator + "blurred");
+                        boolean success = true;
+                        if (!blured.exists()) {
+                            success = blured.mkdirs();
+                        }
+                        if (success) {
+                            String pathToImg = blured.getAbsolutePath() + "/blurred" + songId + "-blur.jpg";
+                            blurred = fcm.saveBlurImageToStorageAndGetPath(pathToImg, songImage);
+                            items.putString("blur", "file://" + blurred);
+                        } else {
+                            // Do something else on failure
+                        }
+
+                    } catch (Exception e) {
+                        // Just let images empty
+                        Log.e("error in image-blured", e.getMessage());
+                    }
+                }
+                if (getIcon) {
+                    try {
+                        File icons = new File(Environment.getExternalStorageDirectory() + File.separator + coverFolder
+                                + File.separator + "icons");
+                        boolean success = true;
+                        if (!icons.exists()) {
+                            success = icons.mkdirs();
+                        }
+                        if (success) {
+                            Bitmap icon = Bitmap.createScaledBitmap(songImage, iconSize, iconSize, true);
+                            String pathToIcon = icons.getAbsolutePath() + "/icons" + songId + "-icon.jpg";
+                            encoded = fcm.saveImageToStorageAndGetPath(pathToIcon, icon);
+                            items.putString("icon", "file://" + encoded);
+                        } else {
+                            // Do something else on failure
+                        }
+                    } catch (Exception e) {
+                        // Just let images empty
+                        Log.e("error in icon", e.getMessage());
+                    }
+
+                }
+            }
+        } catch (Exception e) {
+            Log.e("embedImage", "No embed image");
         }
     }
 
