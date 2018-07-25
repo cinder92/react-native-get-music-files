@@ -140,9 +140,9 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
             }
 
             item.putString("id", String.valueOf(id));
-            item.putString("songUri", String.valueOf(songUri));
+            item.putString("path", String.valueOf(songUri));
             item.putString("title", String.valueOf(title));
-            item.putString("artist", String.valueOf(artist));
+            item.putString("author", String.valueOf(artist));
             item.putString("album", String.valueOf(album));
             item.putString("duration", String.valueOf(duration));
             jsonArray.pushMap(item);
@@ -420,11 +420,11 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
             int iconSize, int coverSize, String songPath, long songId, WritableMap items) {
 
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        mmr.setDataSource(songPath);
         ReactNativeFileManager fcm = new ReactNativeFileManager();
         String encoded = "";
         String blurred = "";
         try {
+            mmr.setDataSource(songPath);
             byte[] albumImageData = mmr.getEmbeddedPicture();
 
             if (albumImageData != null) {
