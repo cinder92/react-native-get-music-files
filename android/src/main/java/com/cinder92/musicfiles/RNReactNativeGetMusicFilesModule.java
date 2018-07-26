@@ -262,6 +262,10 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
 
         int pointer = 0;
 
+        if (musicCursor != null) {
+            sendEvent(reactContext, "NoMusicFilesFound", null);
+        }
+
         if (musicCursor != null && musicCursor.moveToFirst()) {
 
             if (musicCursor.getCount() > 0) {
@@ -362,6 +366,7 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                                             WritableMap params = Arguments.createMap();
                                             params.putArray("batch", jsonArray);
                                             sendEvent(reactContext, "onBatchReceived", params);
+                                            sendEvent(reactContext, "onLastBatchReceived", null);
                                         }
                                     } else {
                                         if (songsPerIteration == jsonArray.size()) {
@@ -373,6 +378,7 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                                             WritableMap params = Arguments.createMap();
                                             params.putArray("batch", jsonArray);
                                             sendEvent(reactContext, "onBatchReceived", params);
+                                            sendEvent(reactContext, "onLastBatchReceived", null);
                                         }
                                     }
 
