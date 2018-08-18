@@ -78,6 +78,22 @@ const MusicFiles = {
         });
 
     },
+    getSongs(options){
+        return new Promise((resolve, reject) => {
+
+            if(Platform.OS === "android"){
+                RNReactNativeGetMusicFiles.getSong(options,(albums) => {
+                    resolve(albums);
+                },(error) => {
+                    resolve(error);
+                });
+            }else{
+               
+            }
+
+        });
+
+    },
 
 }
 export default MusicFiles;
