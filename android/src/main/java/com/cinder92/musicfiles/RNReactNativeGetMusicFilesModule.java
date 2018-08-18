@@ -158,15 +158,18 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
     /////
 
     @ReactMethod
-    public void getAlbums(ReadableMap options,final Callback successCallback, final Callback errorCallback) {
+    public void getAlbums(ReadableMap options, final Callback successCallback, final Callback errorCallback) {
 
         WritableArray jsonArray = new WritableNativeArray();
 
-        String[] projection = new String[] { MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM,
-                MediaStore.Audio.Albums.ARTIST, MediaStore.Audio.Albums.ALBUM_ART, MediaStore.Audio.Albums.NUMBER_OF_SONGS };
+        if (options.hasKey("artist")) {
+            String[] projection = new String[] { MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM,
+                MediaStore.Audio.Albums.ARTIST, MediaStore.Audio.Albums.ALBUM_ART,
+                MediaStore.Audio.Albums.NUMBER_OF_SONGS };
 
-        Cursor cursor = getCurrentActivity().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, projection,
-                null, null, null);
+        Cursor cursor = getCurrentActivity().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                projection, MediaStore.Audio.Albums.ARTIST + " Like ?", new String[] { options.getString("artist") },
+                null);
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
@@ -177,7 +180,65 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                 item.putString("cover", String.valueOf(cursor.getString(3)));
                 item.putString("numberOfSongs", String.valueOf(cursor.getString(4)));
                 jsonArray.pushMap(item);
-            }while (cursor.moveToNext());
+            } while (cursor.moveToNext());
+        } else {
+            String msg = "cursor is either null or empty ";
+            Log.e("Musica", msg);
+        }
+        Log.e("MusicaAlbums", String.valueOf(jsonArray));
+        cursor.close();
+        successCallback.invoke(jsonArray);
+        } else {
+            String[] projection = new String[] { MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM,
+                    MediaStore.Audio.Albums.ARTIST, MediaStore.Audio.Albums.ALBUM_ART,
+                    MediaStore.Audio.Albums.NUMBER_OF_SONGS };
+
+            Cursor cursor = getCurrentActivity().getContentResolver()
+                    .query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, projection, null, null, null);
+            if (cursor != null && cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                do {
+                    WritableMap item = new WritableNativeMap();
+                    item.putString("id", String.valueOf(cursor.getLong(0)));
+                    item.putString("album", String.valueOf(cursor.getString(1)));
+                    item.putString("author", String.valueOf(cursor.getString(2)));
+                    item.putString("cover", String.valueOf(cursor.getString(3)));
+                    item.putString("numberOfSongs", String.valueOf(cursor.getString(4)));
+                    jsonArray.pushMap(item);
+                } while (cursor.moveToNext());
+            } else {
+                String msg = "cursor is either null or empty ";
+                Log.e("Musica", msg);
+            }
+            Log.e("MusicaAlbums", String.valueOf(jsonArray));
+            cursor.close();
+            successCallback.invoke(jsonArray);
+        }
+
+    }
+
+    ///////
+    @ReactMethod
+    public void getArtists(ReadableMap options, final Callback successCallback, final Callback errorCallback) {
+
+        WritableArray jsonArray = new WritableNativeArray();
+
+        String[] projection = new String[] { MediaStore.Audio.Artists.ARTIST_KEY, MediaStore.Audio.Artists.ARTIST,
+                MediaStore.Audio.Artists.NUMBER_OF_ALBUMS, MediaStore.Audio.Artists.NUMBER_OF_TRACKS,
+                MediaStore.Audio.Artists._ID };
+        Cursor cursor = getCurrentActivity().getContentResolver().query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
+                projection, null, null, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            do {
+                WritableMap item = new WritableNativeMap();
+                item.putString("id", String.valueOf(cursor.getLong(0)));
+                item.putString("album", String.valueOf(cursor.getString(1)));
+                item.putString("author", String.valueOf(cursor.getString(2)));
+                item.putString("cover", String.valueOf(cursor.getString(3)));
+                item.putString("numberOfSongs", String.valueOf(cursor.getString(4)));
+                jsonArray.pushMap(item);
+            } while (cursor.moveToNext());
         } else {
             String msg = "cursor is either null or empty ";
             Log.e("Musica", msg);
@@ -188,7 +249,8 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
 
     }
 
-    ///////
+    ////
+
 
     @ReactMethod
     public void getAll(final ReadableMap options, final Callback successCallback, final Callback errorCallback) {

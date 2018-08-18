@@ -60,6 +60,24 @@ const MusicFiles = {
 
         });
 
-    }
+    },
+
+    getArtists(options){
+        return new Promise((resolve, reject) => {
+
+            if(Platform.OS === "android"){
+                RNReactNativeGetMusicFiles.getArtists(options,(albums) => {
+                    resolve(albums);
+                },(error) => {
+                    resolve(error);
+                });
+            }else{
+               
+            }
+
+        });
+
+    },
+
 }
 export default MusicFiles;
