@@ -249,6 +249,42 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
 
     }
 
+    ///////
+    @ReactMethod
+    public void search(ReadableMap options, final Callback successCallback, final Callback errorCallback) {
+        WritableArray jsonArray = new WritableNativeArray();
+        String[] projection = new String[] { MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media._ID };
+
+        String searchParam = "%" + options.getString("searchParam") + "%";
+
+        String Selection = MediaStore.Audio.Albums.ARTIST + " Like ? OR " + MediaStore.Audio.Albums.ALBUM
+                + " Like ? OR " + MediaStore.Audio.Media.TITLE + " Like ? OR " + MediaStore.Audio.Media.DATA
+                + " Like ?";
+        Cursor cursor = getCurrentActivity().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                projection, Selection, new String[] { searchParam, searchParam, searchParam, searchParam }, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            do {
+                WritableMap item = new WritableNativeMap();
+                item.putString("title", String.valueOf(cursor.getString(0)));
+                item.putString("artist", String.valueOf(cursor.getString(1)));
+                item.putString("album", String.valueOf(cursor.getString(2)));
+                item.putString("duration", String.valueOf(cursor.getString(3)));
+                item.putString("path", String.valueOf(cursor.getString(4)));
+                item.putString("id", String.valueOf(cursor.getString(5)));
+                jsonArray.pushMap(item);
+            } while (cursor.moveToNext());
+        } else {
+            String msg = "cursor is either null or empty ";
+            Log.e("Musica", msg);
+        }
+        Log.e("MusicaAlbums", String.valueOf(jsonArray));
+        cursor.close();
+        successCallback.invoke(jsonArray);
+    }
+
     @ReactMethod
     public void getSong(ReadableMap options, final Callback successCallback, final Callback errorCallback) {
 
@@ -289,8 +325,8 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                     MediaStore.Audio.Media._ID };
 
             Cursor cursor = getCurrentActivity().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    projection, MediaStore.Audio.Albums.ALBUM + " Like ?",
-                    new String[] { options.getString("album") }, null);
+                    projection, MediaStore.Audio.Albums.ALBUM + " Like ?", new String[] { options.getString("album") },
+                    null);
             if (cursor != null && cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 do {
@@ -318,8 +354,37 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                     MediaStore.Audio.Media._ID };
 
             Cursor cursor = getCurrentActivity().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    projection, MediaStore.Audio.Media.IS_MUSIC + "!= 0",
-                    null, null);
+                    projection, MediaStore.Audio.Media.IS_MUSIC + "!= 0", null, null);
+            if (cursor != null && cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                do {
+                    WritableMap item = new WritableNativeMap();
+                    item.putString("title", String.valueOf(cursor.getString(0)));
+                    item.putString("artist", String.valueOf(cursor.getString(1)));
+                    item.putString("album", String.valueOf(cursor.getString(2)));
+                    item.putString("duration", String.valueOf(cursor.getString(3)));
+                    item.putString("path", String.valueOf(cursor.getString(4)));
+                    item.putString("id", String.valueOf(cursor.getString(5)));
+                    jsonArray.pushMap(item);
+                } while (cursor.moveToNext());
+            } else {
+                String msg = "cursor is either null or empty ";
+                Log.e("Musica", msg);
+            }
+            Log.e("MusicaAlbums", String.valueOf(jsonArray));
+            cursor.close();
+            successCallback.invoke(jsonArray);
+        }
+
+        if (options.hasKey("artist") && options.hasKey("album")) {
+            String[] projection = new String[] { MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ARTIST,
+                    MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media.DATA,
+                    MediaStore.Audio.Media._ID };
+
+            Cursor cursor = getCurrentActivity().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    projection,
+                    MediaStore.Audio.Albums.ARTIST + " Like ? AND " + MediaStore.Audio.Albums.ALBUM + " Like ?",
+                    new String[] { options.getString("artist"), options.getString("album") }, null);
             if (cursor != null && cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 do {
