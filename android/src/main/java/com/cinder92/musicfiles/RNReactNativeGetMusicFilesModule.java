@@ -33,25 +33,31 @@ import com.cinder92.musicfiles.ReactNativeFileManager;
 
 import org.farng.mp3.MP3File;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 
 public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule {
 
     private final ReactApplicationContext reactContext;
     private boolean getBluredImages = false;
-    private boolean getArtistFromSong = false;
     private boolean getDurationFromSong = true;
-    private boolean getTitleFromSong = true;
     private boolean getIDFromSong = false;
     private boolean getCoverFromSong = false;
-    private boolean getGenreFromSong = false;
-    private boolean getAlbumFromSong = true;
-    private boolean getDateFromSong = false;
-    private boolean getCommentsFromSong = false;
-    private boolean getLyricsFromSong = false;
     private int minimumSongDuration = 0;
     private int songsPerIteration = 0;
     private int version = Build.VERSION.SDK_INT;
     private String[] STAR = { "*" };
+    private MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+    private Map<String, Integer> metadataMap = new HashMap<String, Integer>(){{
+        put("artist", mmr.METADATA_KEY_ARTIST);
+        put("duration", mmr.METADATA_KEY_DURATION);
+        put("title", mmr.METADATA_KEY_TITLE);
+        put("album", mmr.METADATA_KEY_ALBUM);
+        put("genre", mmr.METADATA_KEY_GENRE);
+        put("title", mmr.METADATA_KEY_TITLE);
+    }};
 
     public RNReactNativeGetMusicFilesModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -71,19 +77,6 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
             getBluredImages = options.getBoolean("blured");
         }
 
-
-        if (options.hasKey("artist")) {
-            getArtistFromSong = options.getBoolean("artist");
-        }
-
-        if (options.hasKey("duration")) {
-            getDurationFromSong = options.getBoolean("duration");
-        }
-
-        if (options.hasKey("title")) {
-            getTitleFromSong = options.getBoolean("title");
-        }
-
         if (options.hasKey("id")) {
             getIDFromSong = options.getBoolean("id");
         }
@@ -91,26 +84,6 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
         if (options.hasKey("cover")) {
             getCoverFromSong = options.getBoolean("cover");
         }
-
-        if (options.hasKey("genre")) {
-            getGenreFromSong = options.getBoolean("genre");
-        }
-
-        if (options.hasKey("album")) {
-            getAlbumFromSong = options.getBoolean("album");
-        }
-
-        /*if (options.hasKey("date")) {
-            getDateFromSong = options.getBoolean("date");
-        }
-
-        if (options.hasKey("comments")) {
-            getCommentsFromSong = options.getBoolean("comments");
-        }
-
-        if (options.hasKey("lyrics")) {
-            getLyricsFromSong = options.getBoolean("lyrics");
-        }*/
 
         if (options.hasKey("batchNumber")) {
             songsPerIteration = options.getInt("batchNumber");
@@ -122,14 +95,23 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
             minimumSongDuration = 0;
         }
 
+
+        final Map<String, Integer> enabledMetaProperties = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : metadataMap.entrySet()) {
+            String key = entry.getKey();
+            if (options.getBoolean(key)) {
+                enabledMetaProperties.put(key, entry.getValue());
+            }
+        }
+
         if(version <= 19){
-            getSongs(successCallback,errorCallback);
-        }else{
+            getSongs(enabledMetaProperties, successCallback, errorCallback);
+        } else {
             Thread bgThread = new Thread(null,
                     new Runnable() {
                         @Override
                         public void run() {
-                            getSongs(successCallback,errorCallback);
+                            getSongs(enabledMetaProperties, successCallback, errorCallback);
                         }
                     }, "asyncTask", 1024
             );
@@ -137,7 +119,7 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
         }
     }
 
-    private void getSongs(final Callback successCallback, final Callback errorCallback){
+    private void getSongs(Map<String, Integer> properties, final Callback successCallback, final Callback errorCallback){
         ContentResolver musicResolver = getCurrentActivity().getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
@@ -161,8 +143,6 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
 
 
                 //FFmpegMediaMetadataRetriever mmr = new FFmpegMediaMetadataRetriever();
-                MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-
 
                 int idColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
 
@@ -172,6 +152,11 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                             items = new WritableNativeMap();
 
                             long songId = musicCursor.getLong(idColumn);
+
+                            for (Map.Entry<String, Integer> entry : properties.entrySet()) {
+                                String value = mmr.extractMetadata(entry.getValue());
+                                items.putString(entry.getKey(), value);
+                            }
 
                             if (getIDFromSong) {
                                 String str = String.valueOf(songId);
@@ -197,47 +182,9 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                                 String songTimeDuration = mmr.extractMetadata(mmr.METADATA_KEY_DURATION);
                                 int songIntDuration = Integer.parseInt(songTimeDuration);
 
-                                if (getAlbumFromSong) {
-                                    String songAlbum = mmr.extractMetadata(mmr.METADATA_KEY_ALBUM);
-                                    //String songAlbum = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_ALBUM);
-                                    items.putString("album", songAlbum);
-                                }
-
-                                if (getArtistFromSong) {
-                                    String songArtist = mmr.extractMetadata(mmr.METADATA_KEY_ARTIST);
-                                    //String songArtist = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_ARTIST);
-                                    items.putString("author", songArtist);
-                                }
-
-
-                                if (getTitleFromSong) {
-                                    String songTitle = mmr.extractMetadata(mmr.METADATA_KEY_TITLE);
-                                    //String songTitle = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_TITLE);
-                                    items.putString("title", songTitle);
-                                }
-
-                                if (getGenreFromSong) {
-                                    String songGenre = mmr.extractMetadata(mmr.METADATA_KEY_GENRE);
-                                    //String songGenre = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_GENRE);
-                                    items.putString("genre", songGenre);
-                                }
-
                                 if (getDurationFromSong) {
                                     items.putString("duration", songTimeDuration);
                                 }
-
-                                /*if (getCommentsFromSong) {
-                                    items.putString("comments", mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_COMMENT));
-                                }
-
-                                if (getDateFromSong) {
-                                    items.putString("date", mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DATE));
-                                }
-
-                                if (getLyricsFromSong) {
-                                    //String lyrics = mp3file.getID3v2Tag().getSongLyric();
-                                    //items.putString("lyrics", lyrics);
-                                }*/
 
                                 if (getCoverFromSong) {
 
