@@ -57,6 +57,9 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
         put("album", mmr.METADATA_KEY_ALBUM);
         put("genre", mmr.METADATA_KEY_GENRE);
         put("title", mmr.METADATA_KEY_TITLE);
+        put("trackNumber", mmr.METADATA_KEY_CD_TRACK_NUMBER);
+        put("bitRate", mmr.METADATA_KEY_BITRATE);
+        put("year", mmr.METADATA_KEY_YEAR);
     }};
 
     public RNReactNativeGetMusicFilesModule(ReactApplicationContext reactContext) {
