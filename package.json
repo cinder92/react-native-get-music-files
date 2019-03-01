@@ -5,31 +5,33 @@
       "F:\\Git_2_Main_Projects\\AhangifyReactNative\\AhangifyReactNative"
     ]
   ],
-  "_from": "react-native-get-music-files@2.1.0",
+  "_from": "git+https://github.com/Drazail/react-native-get-music-files.git#development",
   "_id": "react-native-get-music-files@2.1.0",
   "_inBundle": false,
-  "_integrity": "sha512-wNAhTAzzga55itaJx59RWRsPRNp8AkvFWs04gE2TzV3/z1Jbje3hB590JVjGlD6uNtVwstHcOAZwct35ZjURHg==",
+  "_integrity": "",
   "_location": "/react-native-get-music-files",
   "_phantomChildren": {},
   "_requested": {
-    "type": "version",
-    "registry": true,
-    "raw": "react-native-get-music-files@2.1.0",
+    "type": "git",
+    "raw": "react-native-get-music-files@git+https://github.com/Drazail/react-native-get-music-files.git#development",
     "name": "react-native-get-music-files",
     "escapedName": "react-native-get-music-files",
-    "rawSpec": "2.1.0",
-    "saveSpec": null,
-    "fetchSpec": "2.1.0"
+    "rawSpec": "git+https://github.com/Drazail/react-native-get-music-files.git#development",
+    "saveSpec": "git+https://github.com/Drazail/react-native-get-music-files.git#development",
+    "fetchSpec": "https://github.com/Drazail/react-native-get-music-files.git",
+    "gitCommittish": "development"
   },
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/react-native-get-music-files/-/react-native-get-music-files-2.1.0.tgz",
-  "_spec": "2.1.0",
-  "_where": "F:\\Git_2_Main_Projects\\AhangifyReactNative\\AhangifyReactNative",
+  "_resolved": "git+https://github.com/Drazail/react-native-get-music-files.git#c884adb0619e240443264d4c650308eaf0830f11",
+  "_spec": "react-native-get-music-files@git+https://github.com/Drazail/react-native-get-music-files.git#development",
+  "_where": "F:\\GitRepos\\react-native-get-music-files\\react-native-get-music-files\\example",
   "author": {
     "name": "Dante Cervantes"
   },
+  "bundleDependencies": false,
+  "deprecated": false,
   "description": "React Native package to get music files from local and sd for iOS and Android ",
   "keywords": [
     "react-native",

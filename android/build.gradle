@@ -20,7 +20,7 @@ android {
     buildToolsVersion "27.0.3"
 
     defaultConfig {
-        minSdkVersion 17
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 21
         versionName "2.1"
@@ -40,9 +40,9 @@ repositories {
 
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.facebook.react:react-native:+'
-    compile 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
-    compile files('src/main/libs/jid3lib-0.5.4.jar')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.facebook.react:react-native:+'
+    implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
+    implementation files('src/main/libs/jid3lib-0.5.4.jar')
 }
   

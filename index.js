@@ -29,11 +29,11 @@
 
 import { NativeModules, Platform } from "react-native";
 
-const { RNReactNativeGetMusicFiles, RNAndroidStore } = NativeModules;
+const { RNAndroidStore, RNReactNativeGetMusicFiles } = NativeModules;
 /**
- * @class MusicFiles
+ * @class RNAndroidStore
  */
-export const RNAndroidStore = {
+export const RNAndroidAudioStore = {
   /**
    * @member
    * @function

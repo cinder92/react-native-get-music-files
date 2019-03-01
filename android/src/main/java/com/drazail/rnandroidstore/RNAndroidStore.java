@@ -28,12 +28,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 
-import wseemann.media.FFmpegMediaMetadataRetriever;
-
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.cinder92.musicfiles.ReactNativeFileManager;
-
-import org.farng.mp3.MP3File;
 
 public class RNAndroidStore extends ReactContextBaseJavaModule {
 
@@ -72,7 +67,7 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "RNReactNativeGetMusicFiles";
+        return "RNAndroidStore";
     }
 
     @ReactMethod
