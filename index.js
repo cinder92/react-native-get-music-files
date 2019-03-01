@@ -6,6 +6,7 @@
  * @property {string} artist
  * @property {string} album
  * @property {string} duration
+ * @property {string} path
  */
 
 /**
@@ -28,11 +29,11 @@
 
 import { NativeModules, Platform } from "react-native";
 
-const { RNReactNativeGetMusicFiles } = NativeModules;
+const { RNReactNativeGetMusicFiles, RNAndroidStore } = NativeModules;
 /**
  * @class MusicFiles
  */
-const MusicFiles = {
+export const RNAndroidStore = {
   /**
    * @member
    * @function
@@ -57,7 +58,7 @@ const MusicFiles = {
   getAll(options) {
     return new Promise((resolve, reject) => {
       if (Platform.OS === "android") {
-        RNReactNativeGetMusicFiles.getAll(
+        RNAndroidStore.getAll(
           options,
           tracks => {
             resolve(tracks);
@@ -67,7 +68,7 @@ const MusicFiles = {
           }
         );
       } else {
-        RNReactNativeGetMusicFiles.getAll(options, tracks => {
+        RNAndroidStore.getAll(options, tracks => {
           if (tracks.length > 0) {
             resolve(tracks);
           } else {
@@ -95,7 +96,7 @@ const MusicFiles = {
   getSongByPath(options) {
     return new Promise((resolve, reject) => {
       if (Platform.OS === "android") {
-        RNReactNativeGetMusicFiles.getSongByPath(
+        RNAndroidStore.getSongByPath(
           options,
           tracks => {
             resolve(tracks);
@@ -120,7 +121,7 @@ const MusicFiles = {
   getAlbums(options) {
     return new Promise((resolve, reject) => {
       if (Platform.OS === "android") {
-        RNReactNativeGetMusicFiles.getAlbums(
+        RNAndroidStore.getAlbums(
           options,
           albums => {
             resolve(albums);
@@ -144,7 +145,7 @@ const MusicFiles = {
   getArtists(options) {
     return new Promise((resolve, reject) => {
       if (Platform.OS === "android") {
-        RNReactNativeGetMusicFiles.getArtists(
+        RNAndroidStore.getArtists(
           options,
           albums => {
             resolve(albums);
@@ -169,7 +170,7 @@ const MusicFiles = {
   getSongs(options) {
     return new Promise((resolve, reject) => {
       if (Platform.OS === "android") {
-        RNReactNativeGetMusicFiles.getSong(
+        RNAndroidStore.getSong(
           options,
           albums => {
             resolve(albums);
@@ -193,7 +194,7 @@ const MusicFiles = {
   search(options) {
     return new Promise((resolve, reject) => {
       if (Platform.OS === "android") {
-        RNReactNativeGetMusicFiles.search(
+        RNAndroidStore.search(
           options,
           results => {
             resolve(results);
@@ -216,7 +217,7 @@ const MusicFiles = {
   getSongsByGenres(options) {
     return new Promise((resolve, reject) => {
       if (Platform.OS === "android") {
-        RNReactNativeGetMusicFiles.getGenres(
+        RNAndroidStore.getGenres(
           options,
           results => {
             resolve(results);
@@ -230,4 +231,30 @@ const MusicFiles = {
     });
   }
 };
-export default MusicFiles;
+
+export const MusicFiles = {
+  getAll(options){
+
+      return new Promise((resolve, reject) => {
+
+          if(Platform.OS === "android"){
+              RNReactNativeGetMusicFiles.getAll(options,(tracks) => {
+                  resolve(tracks);
+              },(error) => {
+                  resolve(error);
+              });
+          }else{
+              RNReactNativeGetMusicFiles.getAll(options, (tracks) => {
+                  if(tracks.length > 0){
+                      resolve(tracks);
+                  }else{
+                      resolve("Error, you don't have any tracks");
+                  }
+              });   
+          }
+
+      });
+
+  }
+}
+
