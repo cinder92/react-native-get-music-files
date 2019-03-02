@@ -13,9 +13,10 @@ import {
   Text,
   View,
   PermissionsAndroid,
-  Button
+  Button,
+  TextInput
 } from "react-native";
-import { MusicFiles, RNAndroidAudioStore } from "react-native-get-music-files";
+import MusicFiles, { RNAndroidAudioStore } from "react-native-get-music-files";
 
 type Props = {};
 export default class App extends Component<Props> {
@@ -65,16 +66,15 @@ export default class App extends Component<Props> {
         ] // for iOs Version
       })
         .then(f => {
-          this.setState({ tracks: f });
+          this.setState({ ...this.state, tracks: f });
         })
         .catch(er => alert(JSON.stringify(error)));
     };
 
-    this.getAlbums = () => {
-      RNAndroidAudioStore.getAlbums({artist:'johnny cash'
-      })
+    this.getAlbums = (artist='') => {
+      RNAndroidAudioStore.getAlbums({ artist })
         .then(f => {
-          this.setState({ tracks: f });
+          this.setState({ ...this.state, albums: f });
         })
         .catch(er => alert(JSON.stringify(error)));
     };
@@ -82,21 +82,36 @@ export default class App extends Component<Props> {
     this.getArtists = () => {
       RNAndroidAudioStore.getArtists({})
         .then(f => {
-          this.setState({ tracks: f });
+          this.setState({ ...this.state, artists: f });
         })
         .catch(er => alert(JSON.stringify(error)));
     };
 
-    this.getSongs = () => {
-      RNAndroidAudioStore.getSongs({artist:'johnny cash', album:'American IV: The Man Comes Around'})
+    this.getSongs = (artist = '', album = '') => {
+      RNAndroidAudioStore.getSongs({ artist, album })
         .then(f => {
-          this.setState({ tracks: f });
+          this.setState({ ...this.state, songs: f });
+        })
+        .catch(er => alert(JSON.stringify(error)));
+    };
+
+    this.search = searchParam => {
+      RNAndroidAudioStore.search({ searchParam })
+        .then(f => {
+          this.setState({ ...this.state, search: f });
         })
         .catch(er => alert(JSON.stringify(error)));
     };
 
     this.state = {
-      tracks: []
+      getAlbumsInput: "",
+      getSongsInput: {},
+      searchParam: "",
+      tracks: [],
+      artists: [],
+      albums: [],
+      songs: [],
+      search: []
     };
   }
 
@@ -107,23 +122,70 @@ export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
         <Button title="getAll" onPress={this.getMusicFiles} />
         <Text style={styles.instructions}>
-          {JSON.stringify(this.state.tracks)}
+          results : {JSON.stringify(this.state.tracks)}
         </Text>
+
         <Button title="getArtists" onPress={this.getArtists} />
         <Text style={styles.instructions}>
-          {JSON.stringify(this.state.tracks)}
+          results : {JSON.stringify(this.state.artists)}
         </Text>
-        <Button title="getAlbums" onPress={this.getAlbums} />
+
+        <TextInput
+          placeholder="author"
+          onChangeText={v =>
+            this.setState({ ...this.state, getAlbumsInput: v })
+          }
+        />
+        <Button
+          title="getAlbums"
+          onPress={() => this.getAlbums( this.state.getAlbumsInput )}
+        />
         <Text style={styles.instructions}>
-          {JSON.stringify(this.state.tracks)}
+          results : {JSON.stringify(this.state.albums)}
         </Text>
-        <Button title="getSongs" onPress={this.getSongs} />
+        <TextInput
+          placeholder="artist"
+          onChangeText={v =>
+            this.setState({
+              ...this.state,
+              getSongsInput: { ...this.state.getSongsInput, artist: v }
+            })
+          }
+        />
+        <TextInput
+          placeholder="album"
+          onChangeText={v =>
+            this.setState({
+              ...this.state,
+              getSongsInput: { ...this.state.getSongsInput, album: v }
+            })
+          }
+        />
+        <Button
+          title="getSongs"
+          onPress={() =>
+            this.getSongs(
+              this.state.getSongsInput.artist,
+              this.state.getSongsInput.album
+            )
+          }
+        />
         <Text style={styles.instructions}>
-          {JSON.stringify(this.state.tracks)}
+          results : {JSON.stringify(this.state.songs)}
+        </Text>
+
+        <TextInput
+          placeholder="search"
+          onChangeText={v => this.setState({ ...this.state, searchParam: v })}
+        />
+        <Button
+          title="search"
+          onPress={() => this.search(this.state.searchParam)}
+        />
+        <Text style={styles.instructions}>
+          results : {JSON.stringify(this.state.search)}
         </Text>
       </View>
     );

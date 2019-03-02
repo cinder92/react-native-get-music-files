@@ -31,7 +31,7 @@ import { NativeModules, Platform } from "react-native";
 
 const { RNAndroidStore, RNReactNativeGetMusicFiles } = NativeModules;
 /**
- * @class RNAndroidStore
+ * @class RNAndroidAudioStore
  */
 export const RNAndroidAudioStore = {
   /**
@@ -67,15 +67,7 @@ export const RNAndroidAudioStore = {
             resolve(error);
           }
         );
-      } else {
-        RNAndroidStore.getAll(options, tracks => {
-          if (tracks.length > 0) {
-            resolve(tracks);
-          } else {
-            resolve("Error, you don't have any tracks");
-          }
-        });
-      }
+      } 
     });
   },
 
@@ -105,9 +97,7 @@ export const RNAndroidAudioStore = {
             resolve(error);
           }
         );
-      } else {
-      }
-    });
+    }});
   },
 
   /**
@@ -118,7 +108,7 @@ export const RNAndroidAudioStore = {
    * @returns {Promise<Array<Album>>}
    */
 
-  getAlbums(options) {
+  getAlbums(options = {}) {
     return new Promise((resolve, reject) => {
       if (Platform.OS === "android") {
         RNAndroidStore.getAlbums(
@@ -130,7 +120,6 @@ export const RNAndroidAudioStore = {
             resolve(error);
           }
         );
-      } else {
       }
     });
   },
@@ -142,7 +131,7 @@ export const RNAndroidAudioStore = {
    * @returns {Promise<Array<Artist>>}
    */
 
-  getArtists(options) {
+  getArtists(options = {}) {
     return new Promise((resolve, reject) => {
       if (Platform.OS === "android") {
         RNAndroidStore.getArtists(
@@ -154,8 +143,7 @@ export const RNAndroidAudioStore = {
             resolve(error);
           }
         );
-      } else {
-      }
+      } 
     });
   },
 
@@ -167,7 +155,7 @@ export const RNAndroidAudioStore = {
    * @param {string} [options.album]
    * @returns {Promise<Array<Song>>}
    */
-  getSongs(options) {
+  getSongs(options = {}) {
     return new Promise((resolve, reject) => {
       if (Platform.OS === "android") {
         RNAndroidStore.getSong(
@@ -179,8 +167,7 @@ export const RNAndroidAudioStore = {
             resolve(error);
           }
         );
-      } else {
-      }
+      } 
     });
   },
 
@@ -191,7 +178,7 @@ export const RNAndroidAudioStore = {
    * @param {string} options.searchParam
    * @returns {Promise<Array<Song>>}
    */
-  search(options) {
+  search(options = {}) {
     return new Promise((resolve, reject) => {
       if (Platform.OS === "android") {
         RNAndroidStore.search(
@@ -203,8 +190,7 @@ export const RNAndroidAudioStore = {
             resolve(error);
           }
         );
-      } else {
-      }
+      } 
     });
   },
 
@@ -214,7 +200,7 @@ export const RNAndroidAudioStore = {
    * @param {string} [options.genre]
    * @returns {Promise<Array<Song>>} -- in case of options === {} returns Promise<Array<String>>
    */
-  getSongsByGenres(options) {
+  getSongsByGenres(options = {}) {
     return new Promise((resolve, reject) => {
       if (Platform.OS === "android") {
         RNAndroidStore.getGenres(
@@ -226,13 +212,12 @@ export const RNAndroidAudioStore = {
             resolve(error);
           }
         );
-      } else {
-      }
+      } 
     });
   }
 };
 
-export const MusicFiles = {
+const MusicFiles = {
   getAll(options){
 
       return new Promise((resolve, reject) => {
@@ -258,3 +243,4 @@ export const MusicFiles = {
   }
 }
 
+export default MusicFiles;
