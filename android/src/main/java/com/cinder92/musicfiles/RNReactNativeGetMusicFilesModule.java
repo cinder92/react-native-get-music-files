@@ -1,4 +1,3 @@
-
 package com.cinder92.musicfiles;
 
 import com.facebook.react.bridge.Arguments;
@@ -103,11 +102,9 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
         /*if (options.hasKey("date")) {
             getDateFromSong = options.getBoolean("date");
         }
-
         if (options.hasKey("comments")) {
             getCommentsFromSong = options.getBoolean("comments");
         }
-
         if (options.hasKey("lyrics")) {
             getLyricsFromSong = options.getBoolean("lyrics");
         }*/
@@ -229,11 +226,9 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                                 /*if (getCommentsFromSong) {
                                     items.putString("comments", mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_COMMENT));
                                 }
-
                                 if (getDateFromSong) {
                                     items.putString("date", mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DATE));
                                 }
-
                                 if (getLyricsFromSong) {
                                     //String lyrics = mp3file.getID3v2Tag().getSongLyric();
                                     //items.putString("lyrics", lyrics);
