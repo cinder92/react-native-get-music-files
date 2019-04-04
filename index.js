@@ -54,6 +54,7 @@ export const RNAndroidAudioStore = {
    * @param {boolean} [options.album]
    * @param {number} [options.batchNumber]
    * @param {number} [options.minimumSongDuration]
+   * @param {number} [options.delay]
    */
   getAll(options) {
     return new Promise((resolve, reject) => {
