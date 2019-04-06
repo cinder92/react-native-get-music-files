@@ -253,6 +253,7 @@ This class is essentially an extended version of getMusicFiles but only works on
         
         | property 	| type 	| description 	|
         |---------------	|--------	|-------------------------------	|
+        | songUri  	| string 	| path to the song, this is not optional	|
         | blured  	| boolean 	| if true returns path to blured cover, works only when 'cover' is set to true , this is will add a performance hit 	|
         | cover  	| boolean 	| if true returns path to cover  , this is will add a performance hit	|
         | coverFolder 	| string 	| path at which the cover images will be saved, defaults to  "covers"	|
