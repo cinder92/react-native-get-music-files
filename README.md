@@ -267,7 +267,7 @@ This class is essentially an extended version of getMusicFiles but only works on
 
 * ##### getAlbums
     
-    `(async, static) getSongByPath(options) → {Promise.<Array.<Album>>}`
+    `(async, static) getAlbums(options) → {Promise.<Array.<Album>>}`
     
     * options
     
@@ -281,13 +281,13 @@ This class is essentially an extended version of getMusicFiles but only works on
         Type: Album
 * ##### getArtists
     
-    `(async, static) getSongByPath() → {Promise.<Array.<Artist>>}`
+    `(async, static) getArtists() → {Promise.<Array.<Artist>>}`
     * returns
   
         Type: Artist
 * ##### getSongs
     
-    `(async, static) getSongByPath(options) → {Promise.<Array.<Track>>}`
+    `(async, static) getSongs(options) → {Promise.<Array.<Track>>}`
     
     * options
     
@@ -302,7 +302,7 @@ This class is essentially an extended version of getMusicFiles but only works on
         Type: Track
 * ##### search
     
-    `(async, static) getSongByPath(options) → {Promise.<Array.<Track>>}`
+    `(async, static) search(options) → {Promise.<Array.<Track>>}`
     
     * options
     
