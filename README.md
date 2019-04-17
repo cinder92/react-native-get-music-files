@@ -33,7 +33,7 @@ This package get all the sound files in your local and sd card for Androi and iO
 
 #### Android
 
-1. Open up `android/app/src/main/java/[...]/MainActivity.java`
+1. Open up `android/app/src/main/java/[...]/MainApplication.java`
   - Add `com.cinder92.musicfiles.RNReatNativeGetMusicFilesPackage;` to the imports at the top of the file
   - Add `new RNReatNativeGetMusicFilesPackage()` to the list returned by the `getPackages()` method
 2. Append the following lines to `android/settings.gradle`:
@@ -123,7 +123,7 @@ This class is essentially an extended version of getMusicFiles but only works on
 
 #### Manual installation
 
-1. Open up `android/app/src/main/java/[...]/MainActivity.java`
+1. Open up `android/app/src/main/java/[...]/MainApplication.java`
   - Add `import com.drazail.rnandroidstore.RNAndroidStorePackage;` to the imports at the top of the file
   - Add `new RNAndroidStorePackage()` to the list returned by the `getPackages()` method
 2. Append the following lines to `android/settings.gradle`:
