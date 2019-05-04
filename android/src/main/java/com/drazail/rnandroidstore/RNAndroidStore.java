@@ -8,6 +8,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
 
+import java.io.Console;
 import java.io.File;
 
 import android.content.ContentResolver;
@@ -53,6 +54,8 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
     private boolean getIcon = false;
     private int iconSize = 125;
     private int coverSize = 0;
+
+    private int delay = 100;
 
     private boolean getGenreFromSong = false;
     private boolean getAlbumFromSong = true;
@@ -161,10 +164,10 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
             String[] projection = new String[] { MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM,
                     MediaStore.Audio.Albums.ARTIST, MediaStore.Audio.Albums.ALBUM_ART,
                     MediaStore.Audio.Albums.NUMBER_OF_SONGS };
-
+            String searchParam = "%" + options.getString("artist") + "%";
             Cursor cursor = getCurrentActivity().getContentResolver().query(
                     MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, projection,
-                    MediaStore.Audio.Albums.ARTIST + " Like ?", new String[] { options.getString("artist") }, null);
+                    MediaStore.Audio.Albums.ARTIST + " Like ?", new String[] { searchParam }, null);
             if (cursor != null && cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 do {
@@ -366,7 +369,7 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
 
             Cursor cursor = getCurrentActivity().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                     projection, MediaStore.Audio.Albums.ARTIST + " Like ?",
-                    new String[] { options.getString("artist") }, null);
+                    new String[] { "%" + options.getString("artist") + "%" }, null);
             if (cursor != null && cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 do {
@@ -394,7 +397,7 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
                     MediaStore.Audio.Media._ID };
 
             Cursor cursor = getCurrentActivity().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    projection, MediaStore.Audio.Albums.ALBUM + " Like ?", new String[] { options.getString("album") },
+                    projection, MediaStore.Audio.Albums.ALBUM + " Like ?", new String[] { "%" + options.getString("album") + "%" },
                     null);
             if (cursor != null && cursor.getCount() > 0) {
                 cursor.moveToFirst();
@@ -453,7 +456,7 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
             Cursor cursor = getCurrentActivity().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                     projection,
                     MediaStore.Audio.Albums.ARTIST + " Like ? AND " + MediaStore.Audio.Albums.ALBUM + " Like ?",
-                    new String[] { options.getString("artist"), options.getString("album") }, null);
+                    new String[] { "%" + options.getString("artist") + "%", "%" + options.getString("album") + "%"}, null);
             if (cursor != null && cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 do {
@@ -532,6 +535,10 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
             getAlbumFromSong = options.getBoolean("album");
         }
 
+        if (options.hasKey("delay")) {
+            delay = options.getInt("delay");
+        }
+
         /*
          * if (options.hasKey("date")) { getDateFromSong = options.getBoolean("date"); }
          * 
@@ -584,7 +591,7 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
         // Log.i("Tienes => ",Integer.toString(musicCursor.getCount()));
 
         int pointer = 0;
-
+        int mapSize = 0;
         if (musicCursor != null) {
             sendEvent(reactContext, "NoMusicFilesFound", null);
         }
@@ -592,6 +599,7 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
         if (musicCursor != null && musicCursor.moveToFirst()) {
 
             if (musicCursor.getCount() > 0) {
+
                 WritableArray jsonArray = new WritableNativeArray();
                 WritableMap items;
 
@@ -681,10 +689,11 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
                                 }
 
                                 jsonArray.pushMap(items);
-
+                                mapSize++;
                                 if (songsPerIteration > 0) {
 
                                     if (songsPerIteration > musicCursor.getCount()) {
+
                                         if (pointer == (musicCursor.getCount() - 1)) {
                                             WritableMap params = Arguments.createMap();
                                             params.putArray("batch", jsonArray);
@@ -692,11 +701,14 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
                                             sendEvent(reactContext, "onLastBatchReceived", null);
                                         }
                                     } else {
-                                        if (songsPerIteration == jsonArray.size()) {
+
+                                        if (songsPerIteration == mapSize) {
                                             WritableMap params = Arguments.createMap();
                                             params.putArray("batch", jsonArray);
                                             sendEvent(reactContext, "onBatchReceived", params);
                                             jsonArray = new WritableNativeArray();
+                                            mapSize = 0;
+                                            Thread.sleep(delay);
                                         } else if (pointer == (musicCursor.getCount() - 1)) {
                                             WritableMap params = Arguments.createMap();
                                             params.putArray("batch", jsonArray);
@@ -704,7 +716,6 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
                                             sendEvent(reactContext, "onLastBatchReceived", null);
                                         }
                                     }
-
                                     pointer++;
                                 }
                             }
@@ -748,13 +759,13 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
     public void getCoverByPath(Boolean getBluredImages, String coverFolder, Double coverResizeRatio, Boolean getIcon,
             int iconSize, int coverSize, String songPath, long songId, WritableMap items) {
 
-        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        MediaMetadataRetriever mmrr = new MediaMetadataRetriever();
         ReactNativeFileManager fcm = new ReactNativeFileManager();
         String encoded = "";
         String blurred = "";
         try {
-            mmr.setDataSource(songPath);
-            byte[] albumImageData = mmr.getEmbeddedPicture();
+            mmrr.setDataSource(songPath);
+            byte[] albumImageData = mmrr.getEmbeddedPicture();
 
             if (albumImageData != null) {
                 Bitmap songImage = BitmapFactory.decodeByteArray(albumImageData, 0, albumImageData.length);

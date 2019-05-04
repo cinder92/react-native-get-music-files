@@ -14,7 +14,9 @@ import {
   View,
   PermissionsAndroid,
   Button,
-  TextInput
+  TextInput,
+  DeviceEventEmitter,
+  ScrollView
 } from "react-native";
 import MusicFiles, { RNAndroidAudioStore } from "react-native-get-music-files";
 
@@ -46,8 +48,8 @@ export default class App extends Component<Props> {
       }
     };
 
-    this.getMusicFiles = () => {
-      MusicFiles.getAll({
+    this.getAll = () => {
+      RNAndroidAudioStore.getAll({
         blured: false, // works only when 'cover' is set to true
         artist: true,
         duration: true, //default : true
@@ -56,23 +58,14 @@ export default class App extends Component<Props> {
         title: true,
         cover: true,
         minimumSongDuration: 10000, // get songs bigger than 10000 miliseconds duration,
-        fields: [
-          "title",
-          "albumTitle",
-          "genre",
-          "lyrics",
-          "artwork",
-          "duration"
-        ] // for iOs Version
+        batchNumber : 1,
+        delay: 1000
       })
-        .then(f => {
-          this.setState({ ...this.state, tracks: f });
-        })
         .catch(er => alert(JSON.stringify(error)));
     };
 
     this.getAlbums = (artist='') => {
-      RNAndroidAudioStore.getAlbums({ artist })
+      RNAndroidAudioStore.getAlbums({ artist : artist })
         .then(f => {
           this.setState({ ...this.state, albums: f });
         })
@@ -115,23 +108,45 @@ export default class App extends Component<Props> {
     };
   }
 
+
   componentDidMount() {
     this.requestPermission();
+
+    DeviceEventEmitter.addListener(
+      'onBatchReceived',
+      (params) => {
+          this.setState({ ...this.state, tracks: [...this.state.tracks, params.batch] })
+      }
+  )
+
+  DeviceEventEmitter.addListener(
+    'onLastBatchReceived',
+    (params) => {
+        this.setState(alert('last batch sent'));
+    }
+)
+  
   }
 
+  componentWillUnmount(){
+    DeviceEventEmitter.removeAllListeners();
+  }
   render() {
     return (
       <View style={styles.container}>
-        <Button title="getAll" onPress={this.getMusicFiles} />
+        <Button title="getAll" onPress={this.getAll} />
+        <ScrollView style={{height:100, width:'100%'}}>
         <Text style={styles.instructions}>
           results : {JSON.stringify(this.state.tracks)}
         </Text>
+        </ScrollView>
 
         <Button title="getArtists" onPress={this.getArtists} />
+        <ScrollView style={{height:100, width:'100%'}}>
         <Text style={styles.instructions}>
           results : {JSON.stringify(this.state.artists)}
         </Text>
-
+        </ScrollView>
         <TextInput
           placeholder="author"
           onChangeText={v =>
@@ -142,9 +157,11 @@ export default class App extends Component<Props> {
           title="getAlbums"
           onPress={() => this.getAlbums( this.state.getAlbumsInput )}
         />
+        <ScrollView style={{height:100, width:'100%'}}>
         <Text style={styles.instructions}>
           results : {JSON.stringify(this.state.albums)}
         </Text>
+        </ScrollView>
         <TextInput
           placeholder="artist"
           onChangeText={v =>
@@ -172,10 +189,11 @@ export default class App extends Component<Props> {
             )
           }
         />
+        <ScrollView style={{height:100, width:'100%'}}>
         <Text style={styles.instructions}>
           results : {JSON.stringify(this.state.songs)}
         </Text>
-
+        </ScrollView>
         <TextInput
           placeholder="search"
           onChangeText={v => this.setState({ ...this.state, searchParam: v })}
@@ -184,9 +202,11 @@ export default class App extends Component<Props> {
           title="search"
           onPress={() => this.search(this.state.searchParam)}
         />
+        <ScrollView style={{height:100, width:'100%'}}>
         <Text style={styles.instructions}>
           results : {JSON.stringify(this.state.search)}
         </Text>
+        </ScrollView>
       </View>
     );
   }
