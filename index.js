@@ -29,11 +29,12 @@
 
 import { NativeModules, Platform } from "react-native";
 
-const { RNAndroidStore, RNReactNativeGetMusicFiles } = NativeModules;
+const { RNAndroidStore } = NativeModules;
+
 /**
  * @class RNAndroidAudioStore
  */
-export const RNAndroidAudioStore = {
+const RNAndroidAudioStore = {
   /**
    * @member
    * @function
@@ -138,9 +139,11 @@ export const RNAndroidAudioStore = {
         RNAndroidStore.getArtists(
           options,
           albums => {
+            console.log(albums);
             resolve(albums);
           },
           error => {
+            console.log(error)
             resolve(error);
           }
         );
@@ -218,30 +221,6 @@ export const RNAndroidAudioStore = {
   }
 };
 
-const MusicFiles = {
-  getAll(options){
 
-      return new Promise((resolve, reject) => {
 
-          if(Platform.OS === "android"){
-              RNReactNativeGetMusicFiles.getAll(options,(tracks) => {
-                  resolve(tracks);
-              },(error) => {
-                  resolve(error);
-              });
-          }else{
-              RNReactNativeGetMusicFiles.getAll(options, (tracks) => {
-                  if(tracks.length > 0){
-                      resolve(tracks);
-                  }else{
-                      resolve("Error, you don't have any tracks");
-                  }
-              });   
-          }
-
-      });
-
-  }
-}
-
-export default MusicFiles;
+export default RNAndroidAudioStore

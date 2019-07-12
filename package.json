@@ -1,32 +1,30 @@
 {
   "_args": [
     [
-      "react-native-get-music-files@2.1.0",
-      "F:\\Git_2_Main_Projects\\AhangifyReactNative\\AhangifyReactNative"
+      "git+https://github.com/cinder92/react-native-get-music-files.git",
+      "C:\\Users\\Yajana\\Documents\\React-Native\\music\\Serenity"
     ]
   ],
-  "_from": "git+https://github.com/Drazail/react-native-get-music-files.git#development",
-  "_id": "react-native-get-music-files@2.1.0",
+  "_from": "git+https://github.com/cinder92/react-native-get-music-files.git",
+  "_id": "react-native-get-music-files@git+https://github.com/cinder92/react-native-get-music-files.git#dd05e43fada42afe727bde12dadd1297f1b7fd4a",
   "_inBundle": false,
   "_integrity": "",
   "_location": "/react-native-get-music-files",
   "_phantomChildren": {},
   "_requested": {
     "type": "git",
-    "raw": "react-native-get-music-files@git+https://github.com/Drazail/react-native-get-music-files.git#development",
-    "name": "react-native-get-music-files",
-    "escapedName": "react-native-get-music-files",
-    "rawSpec": "git+https://github.com/Drazail/react-native-get-music-files.git#development",
-    "saveSpec": "git+https://github.com/Drazail/react-native-get-music-files.git#development",
-    "fetchSpec": "https://github.com/Drazail/react-native-get-music-files.git",
-    "gitCommittish": "development"
+    "raw": "git+https://github.com/cinder92/react-native-get-music-files.git",
+    "rawSpec": "git+https://github.com/cinder92/react-native-get-music-files.git",
+    "saveSpec": "git+https://github.com/cinder92/react-native-get-music-files.git",
+    "fetchSpec": "https://github.com/cinder92/react-native-get-music-files.git",
+    "gitCommittish": null
   },
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "git+https://github.com/Drazail/react-native-get-music-files.git#c884adb0619e240443264d4c650308eaf0830f11",
-  "_spec": "react-native-get-music-files@git+https://github.com/Drazail/react-native-get-music-files.git#development",
-  "_where": "F:\\GitRepos\\react-native-get-music-files\\react-native-get-music-files\\example",
+  "_resolved": "git+https://github.com/cinder92/react-native-get-music-files.git#dd05e43fada42afe727bde12dadd1297f1b7fd4a",
+  "_spec": "git+https://github.com/cinder92/react-native-get-music-files.git",
+  "_where": "C:\\Users\\Yajana\\Documents\\React-Native\\music\\Serenity",
   "author": {
     "name": "Dante Cervantes"
   },
@@ -44,7 +42,7 @@
     "native"
   ],
   "license": "IST",
-  "main": "index.js",
+  "react-native": "index.js",
   "name": "react-native-get-music-files",
   "peerDependencies": {
     "react-native": "^0.41.2",

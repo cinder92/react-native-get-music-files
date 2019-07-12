@@ -20,7 +20,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReadableMap;
@@ -218,7 +218,7 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
     ///////
     @ReactMethod
     public void getArtists(ReadableMap options, final Callback successCallback, final Callback errorCallback) {
-
+        
         WritableArray jsonArray = new WritableNativeArray();
 
         String[] projection = new String[] { MediaStore.Audio.Artists.ARTIST_KEY, MediaStore.Audio.Artists.ARTIST,
@@ -809,8 +809,8 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
                         }
                         if (success) {
                             String pathToImg = blured.getAbsolutePath() + "/blurred" + songId + "-blur.jpg";
-                            blurred = fcm.saveBlurImageToStorageAndGetPath(pathToImg, songImage);
-                            items.putString("blur", "file://" + blurred);
+                            // blurred = fcm.saveBlurImageToStorageAndGetPath(pathToImg, songImage);
+                            // items.putString("blur", "file://" + blurred);
                         } else {
                             // Do something else on failure
                         }

@@ -9,11 +9,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import android.app.Application;
 /**
  * Created by dantecervantes on 28/11/17.
  */
 
-public class ReactNativeFileManager extends ReactNativeBlurImage{
+public class ReactNativeFileManager extends Application {
     public String saveImageToStorageAndGetPath(String pathToImg, Bitmap songImage) throws IOException {
         try{
 
