@@ -1,25 +1,4 @@
 {
-  "_from": "git+https://github.com/YajanaRao/react-native-get-music-files.git",
-  "_id": "react-native-get-music-files@2.1.0",
-  "_inBundle": false,
-  "_integrity": "",
-  "_location": "/react-native-get-music-files",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "git",
-    "raw": "https://github.com/YajanaRao/react-native-get-music-files.git",
-    "rawSpec": "https://github.com/YajanaRao/react-native-get-music-files.git",
-    "saveSpec": "git+https://github.com/YajanaRao/react-native-get-music-files.git",
-    "fetchSpec": "https://github.com/YajanaRao/react-native-get-music-files.git",
-    "gitCommittish": null
-  },
-  "_requiredBy": [
-    "#USER",
-    "/"
-  ],
-  "_resolved": "git+https://github.com/YajanaRao/react-native-get-music-files.git#982e02b1056f2a927cd9b81f74e7c6917cb5e6ac",
-  "_spec": "https://github.com/YajanaRao/react-native-get-music-files.git",
-  "_where": "C:\\Users\\Yajana\\Documents\\React-Native\\music\\Serenity",
   "author": {
     "name": "Dante Cervantes"
   },
