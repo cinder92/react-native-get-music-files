@@ -39,17 +39,15 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
     private boolean getDurationFromSong = true;
     private boolean getTitleFromSong = true;
     private boolean getIDFromSong = false;
-    private boolean getCoversFromSongs = false;
+    private boolean getCoversFromSongs = true;
     private String coversFolder = "/";
-    private boolean getBluredImages = false;
     private double coversResizeRatio = 1;
     private boolean getIcons = false;
     private int iconsSize = 125;
     private int coversSize = 0;
 
-    private boolean getCoverFromSong = false;
+    private boolean getCoverFromSong = true;
     private String coverFolder = "/";
-    private boolean getBluredImage = false;
     private double coverResizeRatio = 1;
     private boolean getIcon = false;
     private int iconSize = 125;
@@ -75,10 +73,6 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getSongByPath(ReadableMap options, final Callback successCallback, final Callback errorCallback) {
-
-        if (options.hasKey("blured")) {
-            getBluredImage = options.getBoolean("blured");
-        }
 
         if (options.hasKey("coverFolder")) {
             coverFolder = options.getString("coverFolder");
@@ -128,7 +122,7 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
                     duration = cursor.getString(3);
                     songUri = cursor.getString(5);
                     if (getCoverFromSong) {
-                        getCoverByPath(getBluredImage, coverFolder, coverResizeRatio, getIcon, iconSize, coverSize,
+                        getCoverByPath(coverFolder, coverResizeRatio, getIcon, iconSize, coverSize,
                                 songUri, id, item);
                     }
                 }
@@ -484,10 +478,6 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getAll(final ReadableMap options, final Callback successCallback, final Callback errorCallback) {
 
-        if (options.hasKey("blured")) {
-            getBluredImages = options.getBoolean("blured");
-        }
-
         if (options.hasKey("artist")) {
             getArtistFromSong = options.getBoolean("artist");
         }
@@ -683,7 +673,7 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
                                  */
 
                                 if (getCoversFromSongs) {
-                                    getCoverByPath(getBluredImages, coversFolder, coversResizeRatio, getIcons,
+                                    getCoverByPath(coversFolder, coversResizeRatio, getIcons,
                                             iconsSize, coversSize, songPath, songId, items);
 
                                 }
@@ -756,13 +746,12 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
         }
     }
 
-    public void getCoverByPath(Boolean getBluredImages, String coverFolder, Double coverResizeRatio, Boolean getIcon,
+    public void getCoverByPath(String coverFolder, Double coverResizeRatio, Boolean getIcon,
             int iconSize, int coverSize, String songPath, long songId, WritableMap items) {
 
         MediaMetadataRetriever mmrr = new MediaMetadataRetriever();
         ReactNativeFileManager fcm = new ReactNativeFileManager();
         String encoded = "";
-        String blurred = "";
         try {
             mmrr.setDataSource(songPath);
             byte[] albumImageData = mmrr.getEmbeddedPicture();
@@ -799,27 +788,6 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
                     Log.e("error in image", e.getMessage());
                 }
 
-                if (getBluredImages) {
-                    try {
-                        File blured = new File(Environment.getExternalStorageDirectory() + File.separator + coverFolder
-                                + File.separator + "blurred");
-                        boolean success = true;
-                        if (!blured.exists()) {
-                            success = blured.mkdirs();
-                        }
-                        if (success) {
-                            String pathToImg = blured.getAbsolutePath() + "/blurred" + songId + "-blur.jpg";
-                            // blurred = fcm.saveBlurImageToStorageAndGetPath(pathToImg, songImage);
-                            // items.putString("blur", "file://" + blurred);
-                        } else {
-                            // Do something else on failure
-                        }
-
-                    } catch (Exception e) {
-                        // Just let images empty
-                        Log.e("error in image-blured", e.getMessage());
-                    }
-                }
                 if (getIcon) {
                     try {
                         File icons = new File(Environment.getExternalStorageDirectory() + File.separator + coverFolder

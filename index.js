@@ -40,7 +40,6 @@ const RNAndroidAudioStore = {
    * @function
    * @async
    * @param {Object} options
-   * @param {boolean} [options.blured]
    * @param {boolean} [options.artist]
    * @param {boolean} [options.duration]
    * @param {boolean} [options.title]
@@ -84,7 +83,6 @@ const RNAndroidAudioStore = {
    * @param {boolean} [options.icon]
    * @param {number} [options.iconSize]
    * @param {number} [options.coverSize]
-   * @param {boolean} [options.blured]
    * @returns {Promise<Array<Song>>}
    */
   getSongByPath(options) {

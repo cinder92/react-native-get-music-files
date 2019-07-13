@@ -1,29 +1,24 @@
 {
-  "_args": [
-    [
-      "git+https://github.com/cinder92/react-native-get-music-files.git",
-      "C:\\Users\\Yajana\\Documents\\React-Native\\music\\Serenity"
-    ]
-  ],
-  "_from": "git+https://github.com/cinder92/react-native-get-music-files.git",
-  "_id": "react-native-get-music-files@git+https://github.com/cinder92/react-native-get-music-files.git#dd05e43fada42afe727bde12dadd1297f1b7fd4a",
+  "_from": "git+https://github.com/YajanaRao/react-native-get-music-files.git",
+  "_id": "react-native-get-music-files@2.1.0",
   "_inBundle": false,
   "_integrity": "",
   "_location": "/react-native-get-music-files",
   "_phantomChildren": {},
   "_requested": {
     "type": "git",
-    "raw": "git+https://github.com/cinder92/react-native-get-music-files.git",
-    "rawSpec": "git+https://github.com/cinder92/react-native-get-music-files.git",
-    "saveSpec": "git+https://github.com/cinder92/react-native-get-music-files.git",
-    "fetchSpec": "https://github.com/cinder92/react-native-get-music-files.git",
+    "raw": "https://github.com/YajanaRao/react-native-get-music-files.git",
+    "rawSpec": "https://github.com/YajanaRao/react-native-get-music-files.git",
+    "saveSpec": "git+https://github.com/YajanaRao/react-native-get-music-files.git",
+    "fetchSpec": "https://github.com/YajanaRao/react-native-get-music-files.git",
     "gitCommittish": null
   },
   "_requiredBy": [
+    "#USER",
     "/"
   ],
-  "_resolved": "git+https://github.com/cinder92/react-native-get-music-files.git#dd05e43fada42afe727bde12dadd1297f1b7fd4a",
-  "_spec": "git+https://github.com/cinder92/react-native-get-music-files.git",
+  "_resolved": "git+https://github.com/YajanaRao/react-native-get-music-files.git#982e02b1056f2a927cd9b81f74e7c6917cb5e6ac",
+  "_spec": "https://github.com/YajanaRao/react-native-get-music-files.git",
   "_where": "C:\\Users\\Yajana\\Documents\\React-Native\\music\\Serenity",
   "author": {
     "name": "Dante Cervantes"
@@ -42,12 +37,8 @@
     "native"
   ],
   "license": "IST",
-  "react-native": "index.js",
   "name": "react-native-get-music-files",
-  "peerDependencies": {
-    "react-native": "^0.41.2",
-    "react-native-windows": "0.41.0-rc.1"
-  },
+  "react-native": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
