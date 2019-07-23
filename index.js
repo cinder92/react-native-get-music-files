@@ -137,11 +137,9 @@ const RNAndroidAudioStore = {
         RNAndroidStore.getArtists(
           options,
           albums => {
-            console.log(albums);
             resolve(albums);
           },
           error => {
-            console.log(error)
             resolve(error);
           }
         );
