@@ -770,7 +770,7 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
 
                 try {
                     File covers = new File(Environment.getExternalStorageDirectory() + File.separator + coverFolder
-                            + File.separator + "covers");
+                            + File.separator + ".covers");
                     boolean success = true;
                     if (!covers.exists()) {
                         success = covers.mkdirs();
