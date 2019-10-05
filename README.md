@@ -60,7 +60,7 @@ MusicFiles.getAll({
     genre : true,
     title : true,
     cover : true,
-    minimumSongDuration : 10000 // get songs bigger than 10000 miliseconds duration,
+    minimumSongDuration : 10000, // get songs bigger than 10000 miliseconds duration,
     fields : ['title','albumTitle','genre','lyrics','artwork','duration'] // for iOs Version
 }).then(tracks => {
     // do your stuff...
