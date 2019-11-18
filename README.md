@@ -49,7 +49,7 @@ or
   	```
 
 ## Usage
-```
+```js
 import MusicFiles from 'react-native-get-music-files';
 
 MusicFiles.getAll({
@@ -101,7 +101,7 @@ componentDidMount(){
 
 MusicFiles returns an array of objects where you can loop, something like this.
 
-```
+```js
 [
   {
     id : 1,
