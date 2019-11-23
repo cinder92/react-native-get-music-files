@@ -117,7 +117,7 @@ MusicFiles returns an array of objects where you can loop, something like this.
 ]
 ```
 
-# RNAndroidStore
+# RNAndroidAudioStore
 
 This class is essentially an extended version of getMusicFiles but only works on android > 5.0.
 
