@@ -38,7 +38,7 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
     private boolean getArtistFromSong = false;
     private boolean getDurationFromSong = true;
     private boolean getTitleFromSong = true;
-    private boolean getIDFromSong = false;
+    private boolean getIDFromSong = true;
     private boolean getCoversFromSongs = true;
     private String coversFolder = "/";
     private double coversResizeRatio = 1;
@@ -169,7 +169,7 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
                     item.putString("id", String.valueOf(cursor.getLong(0)));
                     item.putString("album", String.valueOf(cursor.getString(1)));
                     item.putString("author", String.valueOf(cursor.getString(2)));
-                    item.putString("cover",  "file://" +String.valueOf(cursor.getString(3)));
+                    item.putString("cover", String.valueOf(cursor.getString(3)));
                     item.putString("numberOfSongs", String.valueOf(cursor.getString(4)));
                     jsonArray.pushMap(item);
                 } while (cursor.moveToNext());
