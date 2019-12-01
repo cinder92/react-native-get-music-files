@@ -47,6 +47,11 @@ or
   	```
       compile project(':react-native-get-music-files')
   	```
+4. Add the following `READ_EXTERNAL_STORAGE` permission to `AndroidManifest.xml`
+    ```xml
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    ```
+    Also starting from Android M, users need to be prompted for permission dynamically. Follow [this](https://facebook.github.io/react-native/docs/permissionsandroid) link for more details on how to do that.
 
 ## Usage
 ```js
