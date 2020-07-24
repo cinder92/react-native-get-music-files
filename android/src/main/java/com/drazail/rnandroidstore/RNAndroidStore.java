@@ -603,7 +603,6 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
                 WritableArray jsonArray = new WritableNativeArray();
                 WritableMap items;
 
-                // FFmpegMediaMetadataRetriever mmr = new FFmpegMediaMetadataRetriever();
                 MediaMetadataRetriever mmr = new MediaMetadataRetriever();
 
                 int idColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
@@ -621,9 +620,6 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
                             }
 
                             String songPath = musicCursor.getString(4);
-                            // MP3File mp3file = new MP3File(songPath);
-
-                            Log.e("musica", songPath);
 
                             if (songPath != null && songPath != "") {
 
@@ -633,37 +629,26 @@ public class RNAndroidStore extends ReactContextBaseJavaModule {
                                 items.putString("path", songPath);
                                 items.putString("fileName", fileName);
 
-                                // String songTimeDuration =
-                                // mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
                                 String songTimeDuration = musicCursor.getString(3);
                                 int songIntDuration = Integer.parseInt(songTimeDuration);
 
                                 if (getAlbumFromSong) {
                                     String songAlbum = musicCursor.getString(2);
-
-                                    // String songAlbum =
-                                    // mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_ALBUM);
                                     items.putString("album", songAlbum);
                                 }
 
                                 if (getArtistFromSong) {
                                     String songArtist = musicCursor.getString(1);
-                                    // String songArtist =
-                                    // mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_ARTIST);
                                     items.putString("author", songArtist);
                                 }
 
                                 if (getTitleFromSong) {
                                     String songTitle = musicCursor.getString(0);
-                                    // String songTitle =
-                                    // mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_TITLE);
                                     items.putString("title", songTitle);
                                 }
 
                                 if (getGenreFromSong) {
                                     String songGenre = mmr.extractMetadata(mmr.METADATA_KEY_GENRE);
-                                    // String songGenre =
-                                    // mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_GENRE);
                                     items.putString("genre", songGenre);
                                 }
 

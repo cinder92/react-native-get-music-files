@@ -25,12 +25,8 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 
-import wseemann.media.FFmpegMediaMetadataRetriever;
-
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.cinder92.musicfiles.ReactNativeFileManager;
-
-import org.farng.mp3.MP3File;
 
 
 public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule {
@@ -156,8 +152,6 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                 WritableArray jsonArray = new WritableNativeArray();
                 WritableMap items;
 
-
-                //FFmpegMediaMetadataRetriever mmr = new FFmpegMediaMetadataRetriever();
                 MediaMetadataRetriever mmr = new MediaMetadataRetriever();
 
 
@@ -176,9 +170,6 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                             }
 
                             String songPath = musicCursor.getString(musicCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
-                            //MP3File mp3file = new MP3File(songPath);
-
-                            Log.e("musica",songPath);
 
                             if (songPath != null && songPath != "") {
 
@@ -190,49 +181,33 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
 
                                 mmr.setDataSource(songPath);
 
-                                //String songTimeDuration = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
                                 String songTimeDuration = mmr.extractMetadata(mmr.METADATA_KEY_DURATION);
                                 int songIntDuration = Integer.parseInt(songTimeDuration);
 
                                 if (getAlbumFromSong) {
                                     String songAlbum = mmr.extractMetadata(mmr.METADATA_KEY_ALBUM);
-                                    //String songAlbum = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_ALBUM);
                                     items.putString("album", songAlbum);
                                 }
 
                                 if (getArtistFromSong) {
                                     String songArtist = mmr.extractMetadata(mmr.METADATA_KEY_ARTIST);
-                                    //String songArtist = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_ARTIST);
                                     items.putString("author", songArtist);
                                 }
 
 
                                 if (getTitleFromSong) {
                                     String songTitle = mmr.extractMetadata(mmr.METADATA_KEY_TITLE);
-                                    //String songTitle = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_TITLE);
                                     items.putString("title", songTitle);
                                 }
 
                                 if (getGenreFromSong) {
                                     String songGenre = mmr.extractMetadata(mmr.METADATA_KEY_GENRE);
-                                    //String songGenre = mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_GENRE);
                                     items.putString("genre", songGenre);
                                 }
 
                                 if (getDurationFromSong) {
                                     items.putString("duration", songTimeDuration);
                                 }
-
-                                /*if (getCommentsFromSong) {
-                                    items.putString("comments", mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_COMMENT));
-                                }
-                                if (getDateFromSong) {
-                                    items.putString("date", mmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DATE));
-                                }
-                                if (getLyricsFromSong) {
-                                    //String lyrics = mp3file.getID3v2Tag().getSongLyric();
-                                    //items.putString("lyrics", lyrics);
-                                }*/
 
                                 if (getCoverFromSong) {
 
