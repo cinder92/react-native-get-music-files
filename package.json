@@ -33,6 +33,7 @@
   "bundleDependencies": false,
   "deprecated": false,
   "description": "React Native package to get music files from local and sd for iOS and Android ",
+  "homepage": "https://github.com/author/RNReactNativeGetMusicFiles.git#readme",
   "keywords": [
     "react-native",
     "music",
