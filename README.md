@@ -9,7 +9,7 @@ This package get all the sound files in your local and sd card for Androi and iO
 * Author
 * Album
 * Duration
-* Path
+* url
 * Cover
 * Duration
 * Genre
@@ -117,7 +117,7 @@ MusicFiles returns an array of objects where you can loop, something like this.
     duration : 132132312321, // miliseconds
     cover : "file:///sdcard/0/123.png",
     blur : "file:///sdcard/0/123-blur.png", //Will come null if createBLur is set to false
-    path : "/sdcard/0/la-danza-del-fuego.mp3"
+    url : "/sdcard/0/la-danza-del-fuego.mp3"
   }
 ]
 ```
@@ -182,7 +182,7 @@ This class is essentially an extended version of getMusicFiles but only works on
     | artist 	| string 	|  artist	|
     | album 	| string 	|  album name	|
     | duration 	| string 	|  duration in ms	|
-    | path 	| string 	| path of the song 	|
+    | url 	| string 	| path of the song 	|
 
 
 #### Methods
@@ -223,7 +223,7 @@ This class is essentially an extended version of getMusicFiles but only works on
         | author 	| string 	|  author	|
         | album 	| string 	|  album name	|
         | duration 	| string 	|  duration in ms	|
-        | path 	| string 	| path of the song 	|
+        | url 	| string 	| path of the song 	|
         | fileName 	| string 	| fileName	|
         | cover 	| string 	|  path to cover	|
     * ##### note : 
