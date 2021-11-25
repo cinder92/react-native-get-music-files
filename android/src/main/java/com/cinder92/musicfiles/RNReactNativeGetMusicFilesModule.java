@@ -185,7 +185,9 @@ public class RNReactNativeGetMusicFilesModule extends ReactContextBaseJavaModule
                                 String fileName = songPath.substring(songPath.lastIndexOf("/") + 1);
 
                                 //by default, always return path and fileName
-                                items.putString("path", songPath);
+                                //path is changed to url since the most popular music player for react native(react-native-track-player) looks for url to play the music
+                                // to avoid unnecessay operation the key is changed to url
+                                items.putString("url", songPath);
                                 items.putString("fileName", fileName);
 
                                 mmr.setDataSource(songPath);
