@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "react": "16.6.3",
-    "react-native": "0.58.6",
+    "react-native": "0.70.2",
     "react-native-get-music-files": "git+https://github.com/Drazail/react-native-get-music-files.git#development"
   },
   "devDependencies": {
