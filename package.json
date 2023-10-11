@@ -1,39 +1,39 @@
 {
-  "_args": [
-    [
-      "react-native-get-music-files@2.1.0",
-      "F:\\Git_2_Main_Projects\\AhangifyReactNative\\AhangifyReactNative"
-    ]
+  "name": "react-native-get-music-files",
+  "version": "2.2.0",
+  "description": "React Native package to get music files from local and sd for iOS and Android",
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
+  "types": "lib/typescript/src/index.d.ts",
+  "react-native": "src/index",
+  "source": "src/index",
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "ios",
+    "cpp",
+    "*.podspec",
+    "!ios/build",
+    "!android/build",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
+    "!android/local.properties",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
   ],
-  "_from": "git+https://github.com/Drazail/react-native-get-music-files.git#development",
-  "_id": "react-native-get-music-files@2.1.0",
-  "_inBundle": false,
-  "_integrity": "",
-  "_location": "/react-native-get-music-files",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "git",
-    "raw": "react-native-get-music-files@git+https://github.com/Drazail/react-native-get-music-files.git#development",
-    "name": "react-native-get-music-files",
-    "escapedName": "react-native-get-music-files",
-    "rawSpec": "git+https://github.com/Drazail/react-native-get-music-files.git#development",
-    "saveSpec": "git+https://github.com/Drazail/react-native-get-music-files.git#development",
-    "fetchSpec": "https://github.com/Drazail/react-native-get-music-files.git",
-    "gitCommittish": "development"
+  "scripts": {
+    "example": "yarn workspace react-native-turbo-songs-example",
+    "test": "jest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
+    "prepare": "bob build",
+    "release": "release-it"
   },
-  "_requiredBy": [
-    "/"
-  ],
-  "_resolved": "git+https://github.com/Drazail/react-native-get-music-files.git#c884adb0619e240443264d4c650308eaf0830f11",
-  "_spec": "react-native-get-music-files@git+https://github.com/Drazail/react-native-get-music-files.git#development",
-  "_where": "F:\\GitRepos\\react-native-get-music-files\\react-native-get-music-files\\example",
-  "author": {
-    "name": "Dante Cervantes"
-  },
-  "bundleDependencies": false,
-  "deprecated": false,
-  "description": "React Native package to get music files from local and sd for iOS and Android ",
-  "homepage": "https://github.com/author/RNReactNativeGetMusicFiles.git#readme",
   "keywords": [
     "react-native",
     "music",
@@ -44,15 +44,129 @@
     "react",
     "native"
   ],
-  "license": "IST",
-  "main": "index.js",
-  "name": "react-native-get-music-files",
+  "repository": "https://github.com/Drazail/react-native-get-music-files",
+  "author": "Dante Cervantes <contacto@dantecervantes.com> (https://dantecervantes.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cinder92/react-native-get-music-files/issues"
+  },
+  "homepage": "https://github.com/cinder92/react-native-get-music-files#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "@commitlint/config-conventional": "^17.0.2",
+    "@evilmartians/lefthook": "^1.5.0",
+    "@react-native/eslint-config": "^0.72.2",
+    "@release-it/conventional-changelog": "^5.0.0",
+    "@types/jest": "^28.1.2",
+    "@types/react": "~17.0.21",
+    "@types/react-native": "0.70.0",
+    "commitlint": "^17.0.2",
+    "del-cli": "^5.0.0",
+    "eslint": "^8.4.1",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jest": "^28.1.1",
+    "pod-install": "^0.1.0",
+    "prettier": "^2.0.5",
+    "react": "18.2.0",
+    "react-native": "0.72.5",
+    "react-native-builder-bob": "^0.20.0",
+    "release-it": "^15.0.0",
+    "turbo": "^1.10.7",
+    "typescript": "^5.0.2"
+  },
+  "resolutions": {
+    "@types/react": "17.0.21"
+  },
   "peerDependencies": {
-    "react-native": "^0.41.2",
-    "react-native-windows": "0.41.0-rc.1"
+    "react": "*",
+    "react-native": "*"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "workspaces": [
+    "example"
+  ],
+  "packageManager": "yarn@3.6.1",
+  "engines": {
+    "node": ">= 18.0.0"
   },
-  "version": "2.1.0"
+  "jest": {
+    "preset": "react-native",
+    "modulePathIgnorePatterns": [
+      "<rootDir>/example/node_modules",
+      "<rootDir>/lib/"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "chore: release ${version}",
+      "tagName": "v${version}"
+    },
+    "npm": {
+      "publish": true
+    },
+    "github": {
+      "release": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular"
+      }
+    }
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@react-native",
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": [
+        "error",
+        {
+          "quoteProps": "consistent",
+          "singleQuote": true,
+          "tabWidth": 2,
+          "trailingComma": "es5",
+          "useTabs": false
+        }
+      ]
+    }
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "lib/"
+  ],
+  "prettier": {
+    "quoteProps": "consistent",
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "useTabs": false
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  },
+  "codegenConfig": {
+    "name": "RNTurboSongsSpec",
+    "type": "modules",
+    "jsSrcsDir": "src"
+  }
 }
