@@ -1,6 +1,6 @@
 {
   "name": "react-native-get-music-files",
-  "version": "2.2.1",
+  "version": "2.2.0",
   "description": "React Native package to get music files from local and sd for iOS and Android",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
