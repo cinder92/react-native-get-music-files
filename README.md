@@ -33,6 +33,7 @@ or
 1. Navigate to `android/app/src/main/AndroidManifest.xml` and ensure to add this permission
 ```
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+<uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/> <-- Add this for Android 13 and newer versions
 ```
 
 ## Before usage
