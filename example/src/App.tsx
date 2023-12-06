@@ -4,7 +4,7 @@ import { StyleSheet, View, Text, Platform, Image } from 'react-native';
 import { getAll, getAlbums, searchSongs } from 'react-native-get-music-files';
 import type { Song } from '../../src/NativeTurboSongs';
 
-import { check, PERMISSIONS, request, RESULTS } from 'react-native-permissions';
+import { check, PERMISSIONS, request, RESULTS, requestMultiple } from 'react-native-permissions';
 
 export default function App() {
   const [result, setResult] = React.useState<Song[]>();
@@ -13,11 +13,14 @@ export default function App() {
     if (Platform.OS === 'android') {
       let hasPermission =
         (await check(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE)) ===
+        RESULTS.GRANTED || (await check(PERMISSIONS.ANDROID.READ_MEDIA_AUDIO)) ===
         RESULTS.GRANTED;
+
       if (!hasPermission) {
-        hasPermission =
-          (await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE)) ===
-          RESULTS.GRANTED;
+        hasPermission = await requestMultiple([
+          PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
+          PERMISSIONS.ANDROID.READ_MEDIA_AUDIO,
+        ]);
       }
 
       return hasPermission;

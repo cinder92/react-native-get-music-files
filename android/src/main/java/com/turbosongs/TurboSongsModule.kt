@@ -30,7 +30,13 @@ class TurboSongsModule internal constructor(context: ReactApplicationContext) :
   }
 
   private fun hasPermissions(): Boolean {
-    return ContextCompat.checkSelfPermission(reactApplicationContext.applicationContext, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+    val readPermission = ContextCompat.checkSelfPermission(reactApplicationContext.applicationContext, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+    val audioPermission = ContextCompat.checkSelfPermission(reactApplicationContext.applicationContext, android.Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED
+
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+      return audioPermission
+    }
+    return readPermission
   }
 
   // Example method
@@ -296,4 +302,3 @@ class TurboSongsModule internal constructor(context: ReactApplicationContext) :
     const val NAME = "TurboSongs"
   }
 }
-
