@@ -40,10 +40,21 @@ or
 
 As this package needs permissions from the device, please ensure that you asked for permissions before run any of this package functions.
 
+## Constants
+```js
+SortSongFields {
+    TITLE, DURATION, ARTIST, GENRE, ALBUM
+}
+
+SortSongOrder {
+    ASC, DESC
+}
+```
+
 ## Usage
 ```js
 
-import { getAll, getAlbums, searchSongs } from "react-native-get-music-files";
+import { getAll, getAlbums, searchSongs, SortSongFields, SortSongOrder } from "react-native-get-music-files";
 
 
 const songsOrError = await getAll({
@@ -51,6 +62,8 @@ const songsOrError = await getAll({
     offset: 0,
     coverQuality: 50,
     minSongDuration: 1000,
+    sortBy: SortSongFields.TITLE,
+    sortOrder: SortSongOrder.DESC,
 });
 
 // error 
@@ -64,6 +77,8 @@ const albumsOrError = await getAlbums({
     offset: 0,
     coverQuality: 50,
     artist: 'Rihanna',
+    sortBy: SortSongFields.ALBUM,
+    sortOrder: SortSongOrder.DESC,
 });
 
 // error 
@@ -77,6 +92,8 @@ const resultsOrError = await searchSongs({
     offset: 0,
     coverQuality: 50,
     searchBy: '...',
+    sortBy: SortSongFields.DURATION,
+    sortOrder: SortSongOrder.DESC,
 });
 
 // error 
@@ -144,6 +161,9 @@ MusicFiles returns an array of objects where you can loop, something like this.
         | limit  	| number 	|  optional	|
         | offset  	| number 	|  required if limit set	|
         | coverQuality  	| number 	|  optional	|
+        | sortBy     |  string | optional |
+        | sortOrder   | string  | optional |
+
     * returns
   
         Type: Albums
@@ -162,6 +182,9 @@ MusicFiles returns an array of objects where you can loop, something like this.
         | offset  	| number 	|  required if limit set	|
         | coverQuality  	| string 	|  optional	|
         | minSongDuration  	| number 	|  optional	|
+        | sortBy     |  string | optional |
+        | sortOrder   | string  | optional |
+        
     * returns
     
         Type: Song
@@ -180,6 +203,8 @@ MusicFiles returns an array of objects where you can loop, something like this.
         | limit  	| number 	|  optional	|
         | offset  	| number 	|  required if limit set	|
         | coverQuality  	| number 	|  optional	|
+        | sortBy     |  string | optional |
+        | sortOrder   | string  | optional |
    
     * returns
         Type: Song

@@ -11,7 +11,6 @@ RCT_EXPORT_METHOD(getAll:(NSDictionary *)options
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    
     if([MPMediaLibrary authorizationStatus] != MPMediaLibraryAuthorizationStatusAuthorized){
         reject(@"Permission denied",@"Permission denied",0);
         return;
@@ -21,6 +20,24 @@ RCT_EXPORT_METHOD(getAll:(NSDictionary *)options
     NSInteger offset =  [options objectForKey:@"offset"] ? [options[@"offset"] integerValue] : 0;
     NSInteger coverQty = [options objectForKey:@"coverQuality"] ? [options[@"coverQuality"] integerValue] : 100;
     NSInteger minSongDuration = [options objectForKey:@"minSongDuration"] ? [options[@"minSongDuration"] integerValue] / 1000 : 100;
+    
+    id sortOrderValue = [options objectForKey:@"sortOrder"];
+
+    NSString *sortOrder;
+    if ([sortOrderValue isKindOfClass:[NSString class]]) {
+        sortOrder = sortOrderValue;
+    } else {
+        sortOrder = @"ASC";
+    }
+    
+    id sortByValue = [options objectForKey:@"sortBy"];
+    
+    NSString *sortBy;
+    if ([sortByValue isKindOfClass:[NSString class]]) {
+        sortBy = sortByValue;
+    } else {
+        sortBy = @"TITLE";
+    }
     
     NSMutableArray *mutableSongsToSerialize = [NSMutableArray array];
 
@@ -35,8 +52,11 @@ RCT_EXPORT_METHOD(getAll:(NSDictionary *)options
     
     // Get the subset of media items within the specified range
     NSArray<MPMediaItem *> *limitedMediaItems = [allMediaItems subarrayWithRange:range];
-  
-    for (MPMediaItem *song in limitedMediaItems) {
+    
+    // Sort items
+    NSArray<MPMediaItem *> *sortedMediaItems = [self sortMediaItems:limitedMediaItems byKey: sortBy sortOrder: sortOrder];
+    
+    for (MPMediaItem *song in sortedMediaItems) {
         NSDictionary *songDictionary = [NSMutableDictionary dictionary];
         
         NSString *durationStr = [song valueForProperty: MPMediaItemPropertyPlaybackDuration];
@@ -93,6 +113,24 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)options
     NSInteger coverQty = [options objectForKey:@"coverQuality"] ? [options[@"coverQuality"] integerValue] : 100;
     NSString *artist = options[@"artist"];
     
+    id sortOrderValue = [options objectForKey:@"sortOrder"];
+
+    NSString *sortOrder;
+    if ([sortOrderValue isKindOfClass:[NSString class]]) {
+        sortOrder = sortOrderValue;
+    } else {
+        sortOrder = @"ASC";
+    }
+    
+    id sortByValue = [options objectForKey:@"sortBy"];
+    
+    NSString *sortBy;
+    if ([sortByValue isKindOfClass:[NSString class]]) {
+        sortBy = sortByValue;
+    } else {
+        sortBy = @"TITLE";
+    }
+    
     if(artist.length == 0){
         reject(@"Artist name must not be empty",@"Artist name must not be empty",0);
         return;
@@ -119,8 +157,11 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)options
     
     // Get the subset of media items within the specified range
     NSArray<MPMediaItem *> *limitedMediaItems = [allMediaItems subarrayWithRange:range];
+    
+    // Sort items
+    NSArray<MPMediaItem *> *sortedMediaItems = [self sortMediaItems:limitedMediaItems byKey: sortBy sortOrder: sortOrder];
   
-    for (MPMediaItem *album in limitedMediaItems) {
+    for (MPMediaItem *album in sortedMediaItems) {
         NSDictionary *songDictionary = [NSMutableDictionary dictionary];
         
         NSURL *assetURL = [album valueForProperty:MPMediaItemPropertyAssetURL];
@@ -139,7 +180,7 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)options
             [songDictionary setValue:[NSString stringWithString:numberOfSongs] forKey:@"numberOfSongs"];
             
             if (artwork != nil) {
-                UIImage *image = [artwork imageWithSize:CGSizeMake(128, 128)];
+                UIImage *image = [artwork imageWithSize:CGSizeMake(coverQty, coverQty)];
                 // http://www.12qw.ch/2014/12/tooltip-decoding-base64-images-with-chrome-data-url/
                 // http://stackoverflow.com/a/510444/185771
                 NSString *base64 = [NSString stringWithFormat:@"%@%@", @"data:image/jpeg;base64,", [self imageToNSString:image]];
@@ -169,6 +210,24 @@ RCT_EXPORT_METHOD(search:(NSDictionary *)options
     NSInteger coverQty = [options objectForKey:@"coverQuality"] ? [options[@"coverQuality"] integerValue] : 100;
     NSString *searchBy = options[@"searchBy"];
     
+    id sortOrderValue = [options objectForKey:@"sortOrder"];
+
+    NSString *sortOrder;
+    if ([sortOrderValue isKindOfClass:[NSString class]]) {
+        sortOrder = sortOrderValue;
+    } else {
+        sortOrder = @"ASC";
+    }
+    
+    id sortByValue = [options objectForKey:@"sortBy"];
+    
+    NSString *sortBy;
+    if ([sortByValue isKindOfClass:[NSString class]]) {
+        sortBy = sortByValue;
+    } else {
+        sortBy = @"TITLE";
+    }
+    
     if(searchBy.length == 0){
         reject(@"Search param must not be empty",@"Search param must not be empty",0);
         return;
@@ -190,8 +249,11 @@ RCT_EXPORT_METHOD(search:(NSDictionary *)options
     
     // Get the subset of media items within the specified range
     NSArray<MPMediaItem *> *limitedMediaItems = [allMediaItems subarrayWithRange:range];
+    
+    // Sort items
+    NSArray<MPMediaItem *> *sortedMediaItems = [self sortMediaItems:limitedMediaItems byKey: sortBy sortOrder: sortOrder];
   
-    for (MPMediaItem *song in limitedMediaItems) {
+    for (MPMediaItem *song in sortedMediaItems) {
         NSDictionary *songDictionary = [NSMutableDictionary dictionary];
         
         NSURL *assetURL = [song valueForProperty:MPMediaItemPropertyAssetURL];
@@ -233,13 +295,101 @@ RCT_EXPORT_METHOD(search:(NSDictionary *)options
     resolve(mutableSongsToSerialize);
 }
 
-
 // http://stackoverflow.com/questions/22243854/encode-image-to-base64-get-a-invalid-base64-string-ios-using-base64encodedstri
 - (NSString *)imageToNSString:(UIImage *)image
 {
     NSData *data = UIImagePNGRepresentation(image);
     
     return [data base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
+}
+
+- (NSArray<MPMediaItem *> *)sortMediaItems:(NSArray<MPMediaItem *> *)mediaItems byKey:(NSString *)sortKey sortOrder:(NSString *)sortOrder {
+    NSArray<MPMediaItem *> *sortedMediaItems;
+
+    if ([sortKey isEqualToString:@"DURATION"]) {
+        sortedMediaItems = [mediaItems sortedArrayUsingComparator:^NSComparisonResult(MPMediaItem *item1, MPMediaItem *item2) {
+            NSNumber *duration1 = [item1 valueForProperty:MPMediaItemPropertyPlaybackDuration];
+            NSNumber *duration2 = [item2 valueForProperty:MPMediaItemPropertyPlaybackDuration];
+            NSComparisonResult result = [duration1 compare:duration2];
+            
+            if ([sortOrder isEqualToString:@"DESC"]) {
+                return (result == NSOrderedAscending) ? NSOrderedDescending :
+                       (result == NSOrderedDescending) ? NSOrderedAscending : NSOrderedSame;
+            }
+            
+            return result;
+        }];
+    } else if ([sortKey isEqualToString:@"TITLE"]) {
+        sortedMediaItems = [mediaItems sortedArrayUsingComparator:^NSComparisonResult(MPMediaItem *item1, MPMediaItem *item2) {
+            NSString *title1 = [item1 valueForProperty:MPMediaItemPropertyTitle];
+            NSString *title2 = [item2 valueForProperty:MPMediaItemPropertyTitle];
+            NSComparisonResult result = [title1 compare:title2];
+            
+            if ([sortOrder isEqualToString:@"DESC"]) {
+                return (result == NSOrderedAscending) ? NSOrderedDescending :
+                       (result == NSOrderedDescending) ? NSOrderedAscending : NSOrderedSame;
+            }
+            
+            return result;
+        }];
+    } else if ([sortKey isEqualToString:@"ARTIST"]) {
+        sortedMediaItems = [mediaItems sortedArrayUsingComparator:^NSComparisonResult(MPMediaItem *item1, MPMediaItem *item2) {
+            NSString *artist1 = [item1 valueForProperty:MPMediaItemPropertyArtist];
+            NSString *artist2 = [item2 valueForProperty:MPMediaItemPropertyArtist];
+            NSComparisonResult result = [artist1 compare:artist2];
+            
+            if ([sortOrder isEqualToString:@"DESC"]) {
+                return (result == NSOrderedAscending) ? NSOrderedDescending :
+                       (result == NSOrderedDescending) ? NSOrderedAscending : NSOrderedSame;
+            }
+            
+            return result;
+        }];
+    } else if ([sortKey isEqualToString:@"ALBUM"]) {
+        sortedMediaItems = [mediaItems sortedArrayUsingComparator:^NSComparisonResult(MPMediaItem *item1, MPMediaItem *item2) {
+            NSString *album1 = [item1 valueForProperty:MPMediaItemPropertyAlbumTitle];
+            NSString *album2 = [item2 valueForProperty:MPMediaItemPropertyAlbumTitle];
+            NSComparisonResult result = [album1 compare:album2];
+            
+            if ([sortOrder isEqualToString:@"DESC"]) {
+                return (result == NSOrderedAscending) ? NSOrderedDescending :
+                       (result == NSOrderedDescending) ? NSOrderedAscending : NSOrderedSame;
+            }
+            
+            return result;
+        }];
+    } else if ([sortKey isEqualToString:@"GENDER"]) {
+        sortedMediaItems = [mediaItems sortedArrayUsingComparator:^NSComparisonResult(MPMediaItem *item1, MPMediaItem *item2) {
+            NSString *gender1 = [item1 valueForProperty:MPMediaItemPropertyGenre];
+            NSString *gender2 = [item2 valueForProperty:MPMediaItemPropertyGenre];
+            NSComparisonResult result = [gender1 compare:gender2];
+            
+            if ([sortOrder isEqualToString:@"DESC"]) {
+                return (result == NSOrderedAscending) ? NSOrderedDescending :
+                       (result == NSOrderedDescending) ? NSOrderedAscending : NSOrderedSame;
+            }
+            
+            return result;
+        }];
+    } else if ([sortKey isEqualToString:@"DATE_ADDED"]) {
+        sortedMediaItems = [mediaItems sortedArrayUsingComparator:^NSComparisonResult(MPMediaItem *item1, MPMediaItem *item2) {
+            NSString *dateAdded1 = [item1 valueForProperty:MPMediaItemPropertyDateAdded];
+            NSString *dateAdded2 = [item2 valueForProperty:MPMediaItemPropertyDateAdded];
+            NSComparisonResult result = [dateAdded1 compare:dateAdded2];
+            
+            if ([sortOrder isEqualToString:@"DESC"]) {
+                return (result == NSOrderedAscending) ? NSOrderedDescending :
+                       (result == NSOrderedDescending) ? NSOrderedAscending : NSOrderedSame;
+            }
+            
+            return result;
+        }];
+    } else {
+        // Default sorting (by title)
+        sortedMediaItems = mediaItems;
+    }
+
+    return sortedMediaItems;
 }
 
 // Don't compile this code when we build for the old architecture.

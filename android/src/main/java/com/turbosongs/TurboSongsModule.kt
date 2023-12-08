@@ -9,8 +9,10 @@ import android.media.MediaMetadataRetriever
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.MediaStore.Audio.Media
 import android.util.Base64
 import androidx.core.content.ContextCompat
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
@@ -21,6 +23,8 @@ import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.bridge.WritableNativeMap
 import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.util.ArrayList
+import java.util.Collections.addAll
 
 class TurboSongsModule internal constructor(context: ReactApplicationContext) :
   TurboSongsSpec(context) {
@@ -72,6 +76,16 @@ class TurboSongsModule internal constructor(context: ReactApplicationContext) :
       else -> 1000
     }
 
+    val sortOrder = when  {
+      options.hasKey("sortOrder") -> options.getString("sortOrder")
+      else -> "ASC"
+    }
+
+    val sortColumn = when {
+      options.hasKey("sortBy") -> options.getString("sortBy")
+      else -> "TITLE"
+    }
+
     // Bellow android 0
     val selection = MediaStore.Audio.Media.IS_MUSIC + " != 0" + " AND " + MediaStore.Audio.Media.DURATION + " >= " + minSongDuration
     // Android 0 afterwards
@@ -81,11 +95,61 @@ class TurboSongsModule internal constructor(context: ReactApplicationContext) :
       ContentResolver.QUERY_ARG_OFFSET bundleTo offset,
     )
 
+    // ORDER BY $orderBy
     val resultSet = parseCursor(projection,
       "$selection LIMIT $limit OFFSET $offset", bundleSelection, null
     )
 
-    promise.resolve(createSongCursor(resultSet, options))
+    val songList: ArrayList<Any> = createSongCursor(resultSet, options).toArrayList()
+
+    // manual sort
+    songList.sortWith(compareBy {
+      when (sortColumn) {
+        "DURATION" -> "duration"
+        "TITLE" -> "title"
+        "ARTIST" -> "artist"
+        "ALBUM" -> "album"
+        "GENRE" -> "genre"
+        "DATE_ADDED" -> "date_added"
+        // Add more cases for other columns if needed
+        else -> "title"
+      }
+    })
+
+    // If the sortOrder is descending, reverse the sorted list
+    if (sortOrder == "DESC") {
+      songList.reverse()
+    }
+
+    // Convert ArrayList to WritableArray
+    val writableArray: WritableArray = Arguments.createArray()
+
+    for (item in songList) {
+      val writableMap: WritableMap = Arguments.createMap()
+
+      when (item) {
+        is Map<*, *> -> {
+          // If the item is a Map, assume it's a HashMap<String, Any>
+          for ((key, value) in item.entries) {
+            when (value) {
+              is String -> writableMap.putString(key.toString(), value)
+              is Int -> writableMap.putInt(key.toString(), value)
+              is Double -> writableMap.putDouble(key.toString(), value)
+              is Boolean -> writableMap.putBoolean(key.toString(), value)
+              // Handle other types as needed
+            }
+          }
+        }
+        // Add more cases if there are other types in your ArrayList
+        else -> {
+          // Handle other types or provide a default behavior
+        }
+      }
+
+      writableArray.pushMap(writableMap)
+    }
+
+    promise.resolve(writableArray)
   }
 
   @ReactMethod
@@ -121,12 +185,22 @@ class TurboSongsModule internal constructor(context: ReactApplicationContext) :
       else -> 0
     }
 
+    val sortOrder = when  {
+      options.hasKey("sortOrder") -> options.getString("sortOrder")
+      else -> "ASC"
+    }
+
+    val sortColumn = when {
+      options.hasKey("sortBy") -> options.getString("sortBy")
+      else -> "TITLE"
+    }
+
     // Bellow android 0
     val selection = MediaStore.Audio.Media.IS_MUSIC + " != 0" + " AND " + MediaStore.Audio.Albums.ARTIST + " LIKE ?"
     val whereArgs = arrayOf("%$artist%")
     // Android 0 afterwards
     val bundleSelection = bundleOf(
-      ContentResolver.QUERY_ARG_SQL_SELECTION bundleTo "$selection",
+      ContentResolver.QUERY_ARG_SQL_SELECTION bundleTo selection,
       ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS bundleTo whereArgs,
       ContentResolver.QUERY_ARG_LIMIT bundleTo limit,
       ContentResolver.QUERY_ARG_OFFSET bundleTo offset,
@@ -136,7 +210,56 @@ class TurboSongsModule internal constructor(context: ReactApplicationContext) :
       "$selection LIMIT $limit OFFSET $offset", bundleSelection, whereArgs
     )
 
-    promise.resolve(createAlbumCursor(resultSet, options))
+    val songList: ArrayList<Any> = createAlbumCursor(resultSet, options).toArrayList()
+
+    // manual sort
+    songList.sortWith(compareBy {
+      when (sortColumn) {
+        "DURATION" -> "duration"
+        "TITLE" -> "title"
+        "ARTIST" -> "artist"
+        "ALBUM" -> "album"
+        "GENRE" -> "genre"
+        "DATE_ADDED" -> "date_added"
+        // Add more cases for other columns if needed
+        else -> "title"
+      }
+    })
+
+    // If the sortOrder is descending, reverse the sorted list
+    if (sortOrder == "DESC") {
+      songList.reverse()
+    }
+
+    // Convert ArrayList to WritableArray
+    val writableArray: WritableArray = Arguments.createArray()
+
+    for (item in songList) {
+      val writableMap: WritableMap = Arguments.createMap()
+
+      when (item) {
+        is Map<*, *> -> {
+          // If the item is a Map, assume it's a HashMap<String, Any>
+          for ((key, value) in item.entries) {
+            when (value) {
+              is String -> writableMap.putString(key.toString(), value)
+              is Int -> writableMap.putInt(key.toString(), value)
+              is Double -> writableMap.putDouble(key.toString(), value)
+              is Boolean -> writableMap.putBoolean(key.toString(), value)
+              // Handle other types as needed
+            }
+          }
+        }
+        // Add more cases if there are other types in your ArrayList
+        else -> {
+          // Handle other types or provide a default behavior
+        }
+      }
+
+      writableArray.pushMap(writableMap)
+    }
+
+    promise.resolve(writableArray)
   }
 
   @ReactMethod
@@ -153,12 +276,10 @@ class TurboSongsModule internal constructor(context: ReactApplicationContext) :
     }
 
     var projection = arrayOf<String>(
-      MediaStore.Audio.AudioColumns._ID,
       MediaStore.Audio.AudioColumns.TITLE,
       MediaStore.Audio.AudioColumns.ALBUM,
       MediaStore.Audio.AudioColumns.ARTIST,
       MediaStore.Audio.AudioColumns.DURATION,
-      MediaStore.Audio.AudioColumns.SIZE,
       MediaStore.Audio.AudioColumns.GENRE,
       MediaStore.Audio.Media.DATA
     )
@@ -173,6 +294,16 @@ class TurboSongsModule internal constructor(context: ReactApplicationContext) :
     val offset =  when (options.hasKey("offset")) {
       true -> options.getInt("offset")
       else -> 0
+    }
+
+    val sortOrder = when  {
+      options.hasKey("sortOrder") -> options.getString("sortOrder")
+      else -> "ASC"
+    }
+
+    val sortColumn = when {
+      options.hasKey("sortBy") -> options.getString("sortBy")
+      else -> "TITLE"
     }
 
     val query = "AND ("+ MediaStore.Audio.Albums.ARTIST + " LIKE ? OR " + MediaStore.Audio.Albums.ALBUM + " LIKE ? OR " + MediaStore.Audio.Media.TITLE + " LIKE ?)"
@@ -193,7 +324,56 @@ class TurboSongsModule internal constructor(context: ReactApplicationContext) :
       "$selection $query LIMIT $limit OFFSET $offset", bundleSelection, whereArgs
     )
 
-    promise.resolve(createSongCursor(resultSet, options))
+    val songList: ArrayList<Any> = createSongCursor(resultSet, options).toArrayList()
+
+    // manual sort
+    songList.sortWith(compareBy {
+      when (sortColumn) {
+        "DURATION" -> "duration"
+        "TITLE" -> "title"
+        "ARTIST" -> "artist"
+        "ALBUM" -> "album"
+        "GENRE" -> "genre"
+        "DATE_ADDED" -> "date_added"
+        // Add more cases for other columns if needed
+        else -> "title"
+      }
+    })
+
+    // If the sortOrder is descending, reverse the sorted list
+    if (sortOrder == "DESC") {
+      songList.reverse()
+    }
+
+    // Convert ArrayList to WritableArray
+    val writableArray: WritableArray = Arguments.createArray()
+
+    for (item in songList) {
+      val writableMap: WritableMap = Arguments.createMap()
+
+      when (item) {
+        is Map<*, *> -> {
+          // If the item is a Map, assume it's a HashMap<String, Any>
+          for ((key, value) in item.entries) {
+            when (value) {
+              is String -> writableMap.putString(key.toString(), value)
+              is Int -> writableMap.putInt(key.toString(), value)
+              is Double -> writableMap.putDouble(key.toString(), value)
+              is Boolean -> writableMap.putBoolean(key.toString(), value)
+              // Handle other types as needed
+            }
+          }
+        }
+        // Add more cases if there are other types in your ArrayList
+        else -> {
+          // Handle other types or provide a default behavior
+        }
+      }
+
+      writableArray.pushMap(writableMap)
+    }
+
+    promise.resolve(writableArray)
   }
 
   private fun parseCursor(projection: Array<String>, selection: String, bundleSelection: Bundle, searchParams: Array<String>?): Cursor? {
@@ -243,8 +423,6 @@ class TurboSongsModule internal constructor(context: ReactApplicationContext) :
     val items: WritableArray = WritableNativeArray()
     var coverQuality = 100
     if (resultSet != null) {
-      println(resultSet.moveToFirst())
-
       if(resultSet.moveToFirst()) {
 
         if(options != null && options.hasKey("coverQuality")){
@@ -259,6 +437,8 @@ class TurboSongsModule internal constructor(context: ReactApplicationContext) :
           val genre = resultSet.getString(4)
           val path = resultSet.getString(5)
 
+          var thumbnail = getCover(path, coverQuality)
+
           var song: WritableMap = WritableNativeMap();
           song.putString("url", path)
           song.putString("title", title)
@@ -266,19 +446,16 @@ class TurboSongsModule internal constructor(context: ReactApplicationContext) :
           song.putString("artist", artist)
           song.putInt("duration", Integer.parseInt(duration))
           song.putString("genre", genre)
-          song.putString("cover", getCover(path, coverQuality))
+          song.putString("cover", thumbnail)
 
           items.pushMap(song)
         } while (resultSet.moveToNext())
       }
     }
 
-
-
     resultSet?.close()
     return items
   }
-
 
   private fun getCover(path: String?, quality: Int) : String {
     if(path == null) return ""
@@ -288,11 +465,16 @@ class TurboSongsModule internal constructor(context: ReactApplicationContext) :
 
     return try {
       val cover = mmr.embeddedPicture ?: return ""
+      if(cover.isEmpty()) return ""
 
       var byteArrayOutputStream = ByteArrayOutputStream()
       var bitmap = BitmapFactory.decodeByteArray(cover, 0, cover.size)
-      bitmap.compress(Bitmap.CompressFormat.JPEG, quality, byteArrayOutputStream)
-      "data:image/jpeg;base64," + Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT)
+
+      if(bitmap != null){
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, byteArrayOutputStream)
+        return "data:image/jpeg;base64," + Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT)
+      }
+      return ""
     } catch (e: IOException){
       ""
     }
