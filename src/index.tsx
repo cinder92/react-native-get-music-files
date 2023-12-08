@@ -22,13 +22,26 @@ const TurboSongsModule = isTurboModuleEnabled
 const TurboSongs = TurboSongsModule
   ? TurboSongsModule
   : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    );
+    {},
+    {
+      get() {
+        throw new Error(LINKING_ERROR);
+      },
+    }
+  );
+
+enum SortSongOrder {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
+
+enum SortSongFields {
+  TITLE = 'TITLE',
+  DURATION = 'DURATION',
+  ARTIST = 'ARTIST',
+  GENRE = 'GENRE',
+  ALBUM = 'ALBUM',
+}
 
 const getAll = async (options?: SongOptions): Promise<Song[] | string> => {
   try {
@@ -54,4 +67,4 @@ const searchSongs = async (options?: SongOptions): Promise<Song[] | string> => {
   }
 };
 
-export { getAll, getAlbums, searchSongs };
+export { getAll, getAlbums, searchSongs, SortSongFields, SortSongOrder };

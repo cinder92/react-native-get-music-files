@@ -11,12 +11,28 @@ export interface Song {
   cover: string;
 }
 
+enum SortSongOrder {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
+
+enum SortSongFields {
+  TITLE = 'TITLE',
+  DURATION = 'DURATION',
+  ARTIST = 'ARTIST',
+  GENRE = 'GENRE',
+  ALBUM = 'ALBUM',
+  DATE_ADDED = 'DATE_ADDED',
+}
+
 export interface SongOptions {
   limit?: number;
   offset?: number;
   coverQuality?: number;
   minSongDuration?: number;
   searchBy?: string;
+  sortOrder?: SortSongOrder;
+  sortBy?: SortSongFields;
 }
 
 export interface Album {
@@ -31,6 +47,8 @@ export interface AlbumOptions {
   offset?: number;
   coverQuality?: number;
   artist: string;
+  sortOrder?: SortSongOrder;
+  sortBy?: SortSongOrder;
 }
 
 export interface Spec extends TurboModule {

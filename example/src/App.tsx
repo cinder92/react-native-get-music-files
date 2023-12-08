@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text, Platform, Image } from 'react-native';
-import { getAll, getAlbums, searchSongs } from 'react-native-get-music-files';
+import { getAll, getAlbums, searchSongs, SortSongFields, SortSongOrder } from 'react-native-get-music-files';
 import type { Song } from '../../src/NativeTurboSongs';
 
 import { check, PERMISSIONS, request, RESULTS, requestMultiple } from 'react-native-permissions';
@@ -48,6 +48,8 @@ export default function App() {
         offset: 0,
         coverQuality: 50,
         minSongDuration: 1000,
+        sortOrder: SortSongOrder.DESC,
+        sortBy: SortSongFields.TITLE,
       });
       if (typeof songsResults === 'string') {
         return;
@@ -58,6 +60,8 @@ export default function App() {
         offset: 0,
         coverQuality: 50,
         artist: 'Rihanna',
+        sortOrder: SortSongOrder.DESC,
+        sortBy: SortSongFields.ALBUM,
       });
       console.log(albums, 'Albums[]');*/
       /*const songsResults = await searchSongs({
@@ -65,6 +69,8 @@ export default function App() {
         offset: 0,
         coverQuality: 50,
         searchBy: 'what',
+        sortOrder: SortSongOrder.DESC,
+        sortBy: SortSongFields.DURATION,
       });
       console.log(songsResults, 'SongResult[]');*/
     }
