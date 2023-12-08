@@ -44,7 +44,7 @@
     "react",
     "native"
   ],
-  "repository": "https://github.com/Drazail/react-native-get-music-files",
+  "repository": "https://github.com/cinder92/react-native-get-music-files",
   "author": "Dante Cervantes <contacto@dantecervantes.com> (https://dantecervantes.com)",
   "license": "MIT",
   "bugs": {
