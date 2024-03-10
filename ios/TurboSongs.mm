@@ -74,13 +74,23 @@ RCT_EXPORT_METHOD(getAll:(NSDictionary *)options
             
             MPMediaItemArtwork *artwork = [song valueForProperty: MPMediaItemPropertyArtwork];
 
-            [songDictionary setValue:[NSString stringWithString:assetURL.absoluteString] forKey:@"url"];
-            [songDictionary setValue:[NSString stringWithString:title] forKey:@"title"];
-            [songDictionary setValue:[NSString stringWithString:albumTitle] forKey:@"album"];
-            [songDictionary setValue:[NSString stringWithString:albumArtist] forKey:@"artist"];
+            if (assetURL != nil && assetURL.absoluteString != nil) {
+                [songDictionary setValue:[NSString stringWithString:assetURL.absoluteString] forKey:@"url"];
+            }
+            if (title != nil) {
+                [songDictionary setValue:[NSString stringWithString:title] forKey:@"title"];
+            }
+            if (albumTitle != nil) {
+                [songDictionary setValue:[NSString stringWithString:albumTitle] forKey:@"album"];
+            }
+            if (albumArtist != nil) {
+                [songDictionary setValue:[NSString stringWithString:albumArtist] forKey:@"artist"];
+            }
             [songDictionary setValue:[NSNumber numberWithInt:durationInt * 1000] forKey:@"duration"];
-            [songDictionary setValue:[NSString stringWithString:genre] forKey:@"genre"];
-            
+            if (genre != nil) {
+                [songDictionary setValue:[NSString stringWithString:genre] forKey:@"genre"];
+            }
+
             if (artwork != nil) {
                 UIImage *image = [artwork imageWithSize:CGSizeMake(coverQty, coverQty)];
                 // http://www.12qw.ch/2014/12/tooltip-decoding-base64-images-with-chrome-data-url/
@@ -173,12 +183,20 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)options
             NSString *albumArtist = [album valueForProperty: MPMediaItemPropertyAlbumArtist]; //
             NSString *numberOfSongs = [album valueForProperty: MPMediaItemPropertyAlbumTrackCount]; //
             MPMediaItemArtwork *artwork = [album valueForProperty: MPMediaItemPropertyArtwork];
-       
-            [songDictionary setValue:[NSString stringWithString:assetURL.absoluteString] forKey:@"url"];
-            [songDictionary setValue:[NSString stringWithString:albumTitle] forKey:@"album"];
-            [songDictionary setValue:[NSString stringWithString:albumArtist] forKey:@"artist"];
-            [songDictionary setValue:[NSString stringWithString:numberOfSongs] forKey:@"numberOfSongs"];
-            
+
+            if (assetURL != nil && assetURL.absoluteString != nil) {
+                [songDictionary setValue:[NSString stringWithString:assetURL.absoluteString] forKey:@"url"];
+            }
+            if (albumTitle != nil) {
+                [songDictionary setValue:[NSString stringWithString:albumTitle] forKey:@"album"];
+            }
+            if (albumArtist != nil) {
+                [songDictionary setValue:[NSString stringWithString:albumArtist] forKey:@"artist"];
+            }
+            if (numberOfSongs != nil) {
+                [songDictionary setValue:[NSString stringWithString:numberOfSongs] forKey:@"numberOfSongs"];
+            }
+
             if (artwork != nil) {
                 UIImage *image = [artwork imageWithSize:CGSizeMake(coverQty, coverQty)];
                 // http://www.12qw.ch/2014/12/tooltip-decoding-base64-images-with-chrome-data-url/
@@ -271,13 +289,24 @@ RCT_EXPORT_METHOD(search:(NSDictionary *)options
             
             MPMediaItemArtwork *artwork = [song valueForProperty: MPMediaItemPropertyArtwork];
 
+            if (assetURL != nil && assetURL.absoluteString != nil) {
+                [songDictionary setValue:[NSString stringWithString:assetURL.absoluteString] forKey:@"url"];
+            }
             [songDictionary setValue:[NSString stringWithString:assetURL.absoluteString] forKey:@"url"];
-            [songDictionary setValue:[NSString stringWithString:title] forKey:@"title"];
-            [songDictionary setValue:[NSString stringWithString:albumTitle] forKey:@"album"];
-            [songDictionary setValue:[NSString stringWithString:albumArtist] forKey:@"artist"];
+            if (title != nil) {
+                [songDictionary setValue:[NSString stringWithString:title] forKey:@"title"];
+            }
+            if (albumTitle != nil) {
+                [songDictionary setValue:[NSString stringWithString:albumTitle] forKey:@"album"];
+            }
+            if (albumArtist != nil) {
+                [songDictionary setValue:[NSString stringWithString:albumArtist] forKey:@"artist"];
+            }
             [songDictionary setValue:[NSNumber numberWithInt:durationInt * 1000] forKey:@"duration"];
-            [songDictionary setValue:[NSString stringWithString:genre] forKey:@"genre"];
-            
+            if (genre != nil) {
+                [songDictionary setValue:[NSString stringWithString:genre] forKey:@"genre"];
+            }
+
             if (artwork != nil) {
                 UIImage *image = [artwork imageWithSize:CGSizeMake(coverQty, coverQty)];
                 // http://www.12qw.ch/2014/12/tooltip-decoding-base64-images-with-chrome-data-url/
